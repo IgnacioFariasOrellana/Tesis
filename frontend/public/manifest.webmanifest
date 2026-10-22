@@ -1,0 +1,15 @@
+{
+  "name": "Allicam - Detallitos hechos con amor",
+  "short_name": "Allicam",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fdf9f3",
+  "theme_color": "#d81b60",
+  "lang": "es-CL",
+  "description": "Boutique artesanal de regalos y experiencias",
+  "icons": [
+    {"src": "/icon-192.png", "type": "image/png", "sizes": "192x192"},
+    {"src": "/icon-512.png", "type": "image/png", "sizes": "512x512"}
+  ]
+}
