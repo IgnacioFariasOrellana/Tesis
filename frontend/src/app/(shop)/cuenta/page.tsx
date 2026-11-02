@@ -1,9 +1,24 @@
-"use client";
-import { FormEvent, useState } from "react";
 import Image from "next/image";
-import { ArrowRight, Lock, LogIn, Mail, ShieldCheck, UserPlus } from "lucide-react";
-export default function AccountPage(){
- const [notice,setNotice]=useState("");
- function onDemo(e:FormEvent<HTMLFormElement>){e.preventDefault();setNotice("Autenticación en desarrollo: este prototipo todavía no crea cuentas ni valida contraseñas. No se envió ningún dato.")}
- return <div className="account-bg"><div className="container account-wrap"><div className="account-heading"><Image src="/images/logo-allicam.png" alt="Allicam" width={230} height={115} style={{objectFit:"contain"}}/><span className="eyebrow">✿ BOUTIQUE DE REGALOS & EXPERIENCIAS</span><h1>Bienvenido a Allicam – Tu cuenta personal de regalos</h1><p>Accede para gestionar tus sorpresas, fechas especiales y seguimiento de entregas.</p></div><div className="account-columns"><form className="account-card" onSubmit={onDemo}><div className="account-card-title"><LogIn/><div><small>CLIENTES REGISTRADOS</small><h2>Iniciar Sesión</h2></div></div><label>Correo electrónico<input type="email" required className="input" placeholder="tucorreo@ejemplo.com" autoComplete="email" /></label><label>Contraseña<input type="password" required className="input" minLength={8} placeholder="••••••••" autoComplete="current-password"/></label><label className="consent"><input type="checkbox"/> Recordar mi sesión en este dispositivo</label><button className="btn btn-primary btn-full" type="submit">Ingresar a mi cuenta <ArrowRight size={17}/></button><div className="pale-note"><ShieldCheck size={20}/> La autenticación real se conectará a FastAPI en otra etapa.</div></form><form className="account-card" onSubmit={onDemo}><div className="account-card-title"><UserPlus/><div><small>NUEVO EN ALLICAM</small><h2>Crear Cuenta Nueva</h2></div></div><div className="form-grid"><label>Nombre y apellido<input className="input" required placeholder="Ej: Camila Morales" /></label><label>Teléfono móvil<input className="input" type="tel" required placeholder="+56 9 1123 4567" /></label></div><label>Correo electrónico<input className="input" required type="email" placeholder="camila@ejemplo.com" autoComplete="email" /></label><div className="form-grid"><label>Crear contraseña<input className="input" required minLength={8} type="password" autoComplete="new-password" placeholder="Mínimo 8 caracteres" /></label><label>Confirmar contraseña<input className="input" required minLength={8} type="password" autoComplete="new-password" placeholder="Repite tu contraseña" /></label></div><label className="consent"><input type="checkbox" required/> He leído y acepto las condiciones de la demostración.</label><button className="btn btn-primary btn-full" type="submit">Crear cuenta & continuar <ArrowRight size={17}/></button></form></div>{notice&&<div role="status" className="demo-notice"><Lock size={18}/>{notice}</div>}<p className="account-bottom"><Mail size={17}/> Allicam respeta tu privacidad. Por ahora ninguna credencial se envía o guarda.</p></div></div>;
+import { LoginForm } from "@/components/LoginForm";
+
+export default function AccountPage() {
+  return (
+    <div className="account-bg">
+      <div className="container account-wrap account-wrap-narrow">
+        <div className="account-heading">
+          <Image
+            src="/images/logo-allicam.png"
+            alt="Allicam"
+            width={180}
+            height={90}
+            style={{ objectFit: "contain" }}
+          />
+          <span className="eyebrow">✿ BOUTIQUE DE REGALOS & EXPERIENCIAS</span>
+          <h1>Qué gusto verte de nuevo</h1>
+          <p>Ingresa para acceder a tu perfil cuando esté disponible.</p>
+        </div>
+        <LoginForm />
+      </div>
+    </div>
+  );
 }

@@ -1,4 +1,5 @@
-export type Category = "Bandejas de Desayuno" | "Cajas de Pino Grabadas" | "Cestas Dulces" | "Detalles Florales";
+export type Category =
+  "Bandejas de Desayuno" | "Cajas de Pino Grabadas" | "Cestas Dulces" | "Detalles Florales";
 export type Occasion = "Pareja" | "Mamá" | "Papá" | "Cumpleaños" | "Aniversario" | "Agradecimiento";
 export type Product = {
   id: string;

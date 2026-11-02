@@ -3,21 +3,236 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { CalendarCheck2, Gift, LockKeyhole, MapPin, ShieldCheck, ShoppingBag, Truck, UserRound } from "lucide-react";
+import {
+  CalendarCheck2,
+  Gift,
+  LockKeyhole,
+  MapPin,
+  ShieldCheck,
+  ShoppingBag,
+  Truck,
+  UserRound,
+} from "lucide-react";
 import { useCart } from "@/context/cart-context";
 import { currency } from "@/lib/format";
 import { saveOrder } from "@/lib/orders";
-export default function CheckoutPage(){
- const {items,subtotal,clearCart,deliveryInstructions}=useCart();const router=useRouter();
- const [recipient,setRecipient]=useState("");const [phone,setPhone]=useState("");const [address,setAddress]=useState("");const [comuna,setComuna]=useState("");const [notes,setNotes]=useState(""); const [accept,setAccept]=useState(false);const [error,setError]=useState("");
- function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();setError("");
-  if(!items.length){setError("Primero agrega un regalo al carrito.");return;}
-  if(!recipient.trim()||!phone.trim()||!address.trim()||!comuna.trim()){setError("Completa los datos requeridos del destinatario y la dirección.");return;}
-  if(!/^\+?[0-9\s-]{8,}$/.test(phone)){setError("Ingresa un teléfono de contacto válido.");return;}
-  if(!accept){setError("Debes aceptar las condiciones de la demostración.");return;}
-  try {saveOrder({id:`AL-${Date.now().toString().slice(-6)}`,createdAt:new Date().toISOString(),recipient:recipient.trim(),address:`${address.trim()}, ${comuna.trim()}`,items,total:subtotal+6000,status:"Recibido",instructions:[deliveryInstructions,notes].filter(Boolean).join(" | ")});clearCart();router.push("/mis-pedidos?creado=1");}
-  catch{setError("No se pudo guardar el pedido de demostración. Revisa el almacenamiento de tu navegador.");}
- }
- return <div className="container checkout-page"><div className="breadcrumb"><Link href="/carrito">01 Carrito</Link> / <strong>02 Confirmación de pedido</strong></div><div className="checkout-grid"><div><div className="checkout-intro"><span className="eyebrow">✿ TALLER ARTESANAL ALLICAM</span><h1 className="serif-title">Confirmación del pedido</h1><p>Completa los datos de entrega. Esta pantalla registra una <strong>simulación local</strong>; no envía pedidos al taller ni cobra dinero.</p></div><form onSubmit={submit} className="checkout-form"><section className="form-section"><h2><span>1</span> <UserRound size={19}/> Datos del destinatario</h2><div className="form-grid"><label>Nombre y apellido <input className="input" required value={recipient} onChange={e=>setRecipient(e.target.value)} placeholder="Valeria Morales"/></label><label>Teléfono de contacto <input className="input" type="tel" required value={phone} onChange={e=>setPhone(e.target.value)} placeholder="+56 9 1234 5678"/></label></div></section><section className="form-section"><h2><span>2</span> <MapPin size={19}/> Dirección de entrega</h2><div className="form-grid"><label>Calle y número <input className="input" required value={address} onChange={e=>setAddress(e.target.value)} placeholder="Av. Pocuro 2450"/></label><label>Comuna o zona <input className="input" required value={comuna} onChange={e=>setComuna(e.target.value)} placeholder="Providencia"/></label></div></section><section className="form-section"><h2><span>3</span> <CalendarCheck2 size={19}/> Fecha y franja de entrega</h2><p>Se conservarán las fechas y franjas que elegiste para cada artículo. Se validarán al implementar el módulo de entregas.</p><div className="pale-note"><Truck size={17}/> Entregas matutinas según disponibilidad del taller.</div></section><section className="form-section"><h2><span>4</span> <Gift size={19}/> Instrucciones especiales</h2><label>Notas para la persona que realiza la entrega<textarea className="input" rows={4} value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Ej: Dejar en conserjería..." /></label></section><section className="form-section"><h2><span>5</span> <LockKeyhole size={19}/> Método de pago</h2><div className="pale-note"><ShieldCheck size={19}/><p><strong>Modo demostración</strong><br/>No se solicitan datos de tarjetas ni se efectúan transferencias bancarias. La integración de pagos se realizará posteriormente.</p></div><label className="consent"><input type="checkbox" checked={accept} onChange={e=>setAccept(e.target.checked)}/><span>Acepto registrar un pedido ficticio en el almacenamiento local de este navegador para probar el flujo.</span></label></section>{error&&<p className="form-error" role="alert">{error}</p>}<button type="submit" className="btn btn-primary btn-full"><ShoppingBag size={18}/> Confirmar pedido de demostración</button></form></div>
- <aside><div className="summary-card sticky"><h2 className="serif-title">Resumen de Bandeja</h2><div className="order-mini-items">{items.map(i=><div className="order-mini" key={i.lineId}><div className="mini-photo"><Image src={i.product.image} alt="" fill sizes="70px"/></div><div><strong>{i.product.name}</strong><small>Cant: {i.quantity}</small></div><b>{currency((i.product.price+i.extraPrice)*i.quantity)}</b></div>)}</div><div className="summary-row"><span>Subtotal</span><strong>{currency(subtotal)}</strong></div><div className="summary-row"><span>Envío (demo)</span><strong>{currency(items.length?6000:0)}</strong></div><div className="summary-total"><span>Total simulado</span><strong>{currency(subtotal+(items.length?6000:0))}</strong></div><div className="secure-notice"><ShieldCheck/><span>Sin pagos, envíos ni notificaciones reales.</span></div></div></aside></div></div>;
+export default function CheckoutPage() {
+  const { items, subtotal, clearCart, deliveryInstructions } = useCart();
+  const router = useRouter();
+  const [recipient, setRecipient] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [comuna, setComuna] = useState("");
+  const [notes, setNotes] = useState("");
+  const [accept, setAccept] = useState(false);
+  const [error, setError] = useState("");
+  function submit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError("");
+    if (!items.length) {
+      setError("Primero agrega un regalo al carrito.");
+      return;
+    }
+    if (!recipient.trim() || !phone.trim() || !address.trim() || !comuna.trim()) {
+      setError("Completa los datos requeridos del destinatario y la dirección.");
+      return;
+    }
+    if (!/^\+?[0-9\s-]{8,}$/.test(phone)) {
+      setError("Ingresa un teléfono de contacto válido.");
+      return;
+    }
+    if (!accept) {
+      setError("Debes aceptar las condiciones de la demostración.");
+      return;
+    }
+    try {
+      saveOrder({
+        id: `AL-${Date.now().toString().slice(-6)}`,
+        createdAt: new Date().toISOString(),
+        recipient: recipient.trim(),
+        address: `${address.trim()}, ${comuna.trim()}`,
+        items,
+        total: subtotal + 6000,
+        status: "Recibido",
+        instructions: [deliveryInstructions, notes].filter(Boolean).join(" | "),
+      });
+      clearCart();
+      router.push("/mis-pedidos?creado=1");
+    } catch {
+      setError(
+        "No se pudo guardar el pedido de demostración. Revisa el almacenamiento de tu navegador.",
+      );
+    }
+  }
+  return (
+    <div className="container checkout-page">
+      <div className="breadcrumb">
+        <Link href="/carrito">01 Carrito</Link> / <strong>02 Confirmación de pedido</strong>
+      </div>
+      <div className="checkout-grid">
+        <div>
+          <div className="checkout-intro">
+            <span className="eyebrow">✿ TALLER ARTESANAL ALLICAM</span>
+            <h1 className="serif-title">Confirmación del pedido</h1>
+            <p>
+              Completa los datos de entrega. Esta pantalla registra una{" "}
+              <strong>simulación local</strong>; no envía pedidos al taller ni cobra dinero.
+            </p>
+          </div>
+          <form onSubmit={submit} className="checkout-form">
+            <section className="form-section">
+              <h2>
+                <span>1</span> <UserRound size={19} /> Datos del destinatario
+              </h2>
+              <div className="form-grid">
+                <label>
+                  Nombre y apellido{" "}
+                  <input
+                    className="input"
+                    required
+                    value={recipient}
+                    onChange={(e) => setRecipient(e.target.value)}
+                    placeholder="Valeria Morales"
+                  />
+                </label>
+                <label>
+                  Teléfono de contacto{" "}
+                  <input
+                    className="input"
+                    type="tel"
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+56 9 1234 5678"
+                  />
+                </label>
+              </div>
+            </section>
+            <section className="form-section">
+              <h2>
+                <span>2</span> <MapPin size={19} /> Dirección de entrega
+              </h2>
+              <div className="form-grid">
+                <label>
+                  Calle y número{" "}
+                  <input
+                    className="input"
+                    required
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="Av. Pocuro 2450"
+                  />
+                </label>
+                <label>
+                  Comuna o zona{" "}
+                  <input
+                    className="input"
+                    required
+                    value={comuna}
+                    onChange={(e) => setComuna(e.target.value)}
+                    placeholder="Providencia"
+                  />
+                </label>
+              </div>
+            </section>
+            <section className="form-section">
+              <h2>
+                <span>3</span> <CalendarCheck2 size={19} /> Fecha y franja de entrega
+              </h2>
+              <p>
+                Se conservarán las fechas y franjas que elegiste para cada artículo. Se validarán al
+                implementar el módulo de entregas.
+              </p>
+              <div className="pale-note">
+                <Truck size={17} /> Entregas matutinas según disponibilidad del taller.
+              </div>
+            </section>
+            <section className="form-section">
+              <h2>
+                <span>4</span> <Gift size={19} /> Instrucciones especiales
+              </h2>
+              <label>
+                Notas para la persona que realiza la entrega
+                <textarea
+                  className="input"
+                  rows={4}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Ej: Dejar en conserjería..."
+                />
+              </label>
+            </section>
+            <section className="form-section">
+              <h2>
+                <span>5</span> <LockKeyhole size={19} /> Método de pago
+              </h2>
+              <div className="pale-note">
+                <ShieldCheck size={19} />
+                <p>
+                  <strong>Modo demostración</strong>
+                  <br />
+                  No se solicitan datos de tarjetas ni se efectúan transferencias bancarias. La
+                  integración de pagos se realizará posteriormente.
+                </p>
+              </div>
+              <label className="consent">
+                <input
+                  type="checkbox"
+                  checked={accept}
+                  onChange={(e) => setAccept(e.target.checked)}
+                />
+                <span>
+                  Acepto registrar un pedido ficticio en el almacenamiento local de este navegador
+                  para probar el flujo.
+                </span>
+              </label>
+            </section>
+            {error && (
+              <p className="form-error" role="alert">
+                {error}
+              </p>
+            )}
+            <button type="submit" className="btn btn-primary btn-full">
+              <ShoppingBag size={18} /> Confirmar pedido de demostración
+            </button>
+          </form>
+        </div>
+        <aside>
+          <div className="summary-card sticky">
+            <h2 className="serif-title">Resumen de Bandeja</h2>
+            <div className="order-mini-items">
+              {items.map((i) => (
+                <div className="order-mini" key={i.lineId}>
+                  <div className="mini-photo">
+                    <Image src={i.product.image} alt="" fill sizes="70px" />
+                  </div>
+                  <div>
+                    <strong>{i.product.name}</strong>
+                    <small>Cant: {i.quantity}</small>
+                  </div>
+                  <b>{currency((i.product.price + i.extraPrice) * i.quantity)}</b>
+                </div>
+              ))}
+            </div>
+            <div className="summary-row">
+              <span>Subtotal</span>
+              <strong>{currency(subtotal)}</strong>
+            </div>
+            <div className="summary-row">
+              <span>Envío (demo)</span>
+              <strong>{currency(items.length ? 6000 : 0)}</strong>
+            </div>
+            <div className="summary-total">
+              <span>Total simulado</span>
+              <strong>{currency(subtotal + (items.length ? 6000 : 0))}</strong>
+            </div>
+            <div className="secure-notice">
+              <ShieldCheck />
+              <span>Sin pagos, envíos ni notificaciones reales.</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  );
 }

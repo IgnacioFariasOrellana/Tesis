@@ -200,7 +200,7 @@ The shape vocabulary is defined by `pill-shaped` and petal-soft geometry (`level
 ## Components
 
 ### Buttons
-- **Primary Action:** Solid vibrant magenta (`#D81B60`) or a rich floral gradient (from `#E91E63` to `#F57C00`), white bold text, full pill radius (`rounded-full`), padded with `0.875rem 1.75rem`. Hover triggers a warm glow shadow (`0 8px 20px rgba(216, 27, 96, 0.35)`).
+- **Primary Action:** Solid vibrant magenta (`#D81B60`), white bold text, full pill radius (`rounded-full`), padded with `0.875rem 1.75rem`. Hover triggers a warm glow shadow (`0 8px 20px rgba(216, 27, 96, 0.35)`).
 - **Secondary Action:** Outlined in violet hortensia (`#7B1FA2`) or filled with light translucent lilac (`rgba(123, 31, 162, 0.08)`), text colored `#7B1FA2`.
 - **Tertiary / Subtle:** Flat warm cream base with primary colored text, gentle underline on hover.
 
