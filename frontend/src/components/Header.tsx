@@ -37,7 +37,7 @@ export function Header() {
   }, []);
 
   return (
-    <header className="site-header">
+    <header className={`site-header ${pathname === "/catalogo" ? "catalog-header" : ""}`}>
       <div className="container nav-wrap">
         <Link
           href="/"

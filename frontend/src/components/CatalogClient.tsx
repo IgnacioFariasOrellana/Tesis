@@ -75,22 +75,93 @@ export function CatalogClient() {
               </span>
             </div>
           </div>
-          <div className="filter-panel">
-            <div className="filter-row">
-              <span className="filter-label">OCASIÓN:</span>
-              <div className="chip-group">
-                {occasions.map((o) => (
-                  <button
-                    key={o}
-                    onClick={() => setOccasion(o)}
-                    className={`chip ${occasion === o ? "selected" : ""}`}
-                  >
-                    {o}
-                  </button>
-                ))}
+        </div>
+      </section>
+      <section className="container catalog-results">
+        <div className="catalog-layout">
+          <aside className="catalog-sidebar" aria-label="Filtros del catálogo">
+            <div className="filter-panel">
+              <div className="filter-panel-heading">
+                <h2>Filtrar regalos</h2>
+                <button
+                  type="button"
+                  className="text-link"
+                  onClick={() => {
+                    setCategory("Todas");
+                    setOccasion("Todas");
+                    setPrice("Todos");
+                    setToday(false);
+                  }}
+                >
+                  Limpiar
+                </button>
               </div>
+              <div className="filter-row">
+                <span className="filter-label">OCASIÓN:</span>
+                <div className="chip-group">
+                  {occasions.map((o) => (
+                    <button
+                      key={o}
+                      onClick={() => setOccasion(o)}
+                      className={`chip ${occasion === o ? "selected" : ""}`}
+                    >
+                      {o}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="filter-row">
+                <span className="filter-label">CATEGORÍA:</span>
+                <div className="chip-group">
+                  {categories.map((c) => (
+                    <button
+                      key={c}
+                      className={`chip ${category === c ? "selected" : ""}`}
+                      onClick={() => setCategory(c)}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="filter-row">
+                <span className="filter-label">PRESUPUESTO:</span>
+                <div className="chip-group">
+                  {(
+                    [
+                      { value: "Todos", label: "Todos" },
+                      { value: "0-60000", label: "Menos de $60.000" },
+                      { value: "60000-80000", label: "$60–$80 mil" },
+                      { value: "80000+", label: "Más de $80.000" },
+                    ] as const
+                  ).map((r) => (
+                    <button
+                      key={r.value}
+                      className={`chip ${price === r.value ? "selected" : ""}`}
+                      onClick={() => setPrice(r.value)}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+                <label className="today-filter">
+                  <input
+                    type="checkbox"
+                    checked={today}
+                    onChange={(e) => setToday(e.target.checked)}
+                  />{" "}
+                  <Clock3 size={14} /> Entrega hoy
+                </label>
+              </div>
+            </div>
+          </aside>
+          <div className="catalog-main">
+            <div className="catalog-toolbar">
+              <p className="muted-text">
+                Mostrando <strong>{visible.length}</strong> creaciones disponibles
+              </p>
               <label className="sort-field">
-                Ordenar{" "}
+                Ordenar
                 <select value={sort} onChange={(e) => setSort(e.target.value)}>
                   <option value="popular">Más populares</option>
                   <option value="price-asc">Precio menor</option>
@@ -98,81 +169,20 @@ export function CatalogClient() {
                 </select>
               </label>
             </div>
-            <div className="filter-row">
-              <span className="filter-label">CATEGORÍA:</span>
-              <div className="chip-group">
-                {categories.map((c) => (
-                  <button
-                    key={c}
-                    className={`chip ${category === c ? "selected" : ""}`}
-                    onClick={() => setCategory(c)}
-                  >
-                    {c}
-                  </button>
-                ))}
-              </div>
+            <div className="products-grid">
+              {visible.map((p) => (
+                <ProductCard product={p} key={p.id} />
+              ))}
             </div>
-            <div className="filter-row">
-              <span className="filter-label">PRESUPUESTO:</span>
-              <div className="chip-group">
-                {(
-                  [
-                    { value: "Todos", label: "Todos" },
-                    { value: "0-60000", label: "Menos de $60.000" },
-                    { value: "60000-80000", label: "$60–$80 mil" },
-                    { value: "80000+", label: "Más de $80.000" },
-                  ] as const
-                ).map((r) => (
-                  <button
-                    key={r.value}
-                    className={`chip ${price === r.value ? "selected" : ""}`}
-                    onClick={() => setPrice(r.value)}
-                  >
-                    {r.label}
-                  </button>
-                ))}
+            {visible.length === 0 && (
+              <div className="empty-state">
+                <PackageSearch size={38} />
+                <h3>No encontramos detalles con estos filtros</h3>
+                <p>Prueba otra ocasión o un presupuesto distinto.</p>
               </div>
-              <label className="today-filter">
-                <input
-                  type="checkbox"
-                  checked={today}
-                  onChange={(e) => setToday(e.target.checked)}
-                />{" "}
-                <Clock3 size={14} /> Entrega hoy
-              </label>
-            </div>
+            )}
           </div>
         </div>
-      </section>
-      <section className="container catalog-results">
-        <div className="section-between">
-          <p className="muted-text">
-            Mostrando <strong>{visible.length}</strong> creaciones disponibles
-          </p>
-          <button
-            className="text-link"
-            onClick={() => {
-              setCategory("Todas");
-              setOccasion("Todas");
-              setPrice("Todos");
-              setToday(false);
-            }}
-          >
-            Limpiar filtros
-          </button>
-        </div>
-        <div className="products-grid">
-          {visible.map((p) => (
-            <ProductCard product={p} key={p.id} />
-          ))}
-        </div>
-        {visible.length === 0 && (
-          <div className="empty-state">
-            <PackageSearch size={38} />
-            <h3>No encontramos detalles con estos filtros</h3>
-            <p>Prueba otra ocasión o un presupuesto distinto.</p>
-          </div>
-        )}
         <div className="catalog-end">
           Detalles elegidos con amor y preparados por nuestro taller.
           <em>“Un detallito hecho con amor, para cada ocasión”</em>
