@@ -1,6 +1,6 @@
 # Esquema Allicam
 
-Cada archivo en `tables/` crea una tabla con el mismo nombre y sus índices. `schema.py` los concatena en el orden de las claves foráneas y luego agrega `security.sql` y `functions/pedido.sql`, todo dentro de una transacción.
+Cada archivo en `tables/` crea una tabla con el mismo nombre y sus índices. `schema.py` los concatena en el orden de las claves foráneas y luego agrega `security.sql` y los archivos de `functions/` según `FUNCTION_ORDER`, todo dentro de una transacción.
 
 Para agregar una tabla: crea `tables/<nombre>.sql`, agrega su nombre a `TABLE_ORDER` en `schema.py` según sus dependencias y agrégala a la lista de `security.sql`. Los archivos individuales no se ejecutan en orden alfabético.
 
@@ -22,6 +22,15 @@ Después ejecuta `003_pedidos_reales.sql`. Agrega `pedido.checkout_token` para e
 duplicados al reintentar una solicitud y la función `crear_pedido_allicam` que registra
 pedido, líneas, datos de entrega e historial en una sola transacción. La función
 solo permite la ejecución desde el backend con la clave `service_role`.
+
+Ejecuta `004_producto_insumo.sql` para habilitar el selector y la creación de insumos
+desde administración. Usa las tablas existentes `insumo` y `producto_insumo`:
+`id_producto` + `id_insumo` identifican cada relación y `cantidad_requerida` indica
+cuánto se necesita para una unidad de producto. Las funciones fuente están en
+`functions/insumo.sql`, `functions/producto_insumo.sql` y `functions/producto.sql`.
+Crear un producto y sus relaciones es una transacción; editar la composición también.
+Estas operaciones no descuentan stock. Los productos anteriores conservan su contenido
+de texto hasta que se vinculen sus insumos desde **Editar insumos**.
 
 `usuario.contrasena_hash` es una columna heredada sin uso. Supabase Auth guarda el
 hash de la contraseña en `auth.users.encrypted_password`; no se duplica en `public`.

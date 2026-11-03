@@ -37,3 +37,5 @@ Después, inicia sesión de nuevo. En `/admin/usuarios` podrás asignar `cliente
 El catálogo y las fichas de producto muestran datos de Supabase. Tras aplicar `003`, un cliente con sesión puede registrar un pedido en `/checkout` y verlo en `/mis-pedidos`. El administrador ve pedidos, pagos e insumos guardados en la base; el repartidor ve únicamente las rutas asignadas a su cuenta. El checkout deja el pago pendiente y no registra pagos ni despachos automáticamente.
 
 Para fotos, crea en Supabase Storage un bucket público `product-images` para JPG, PNG o WebP de hasta 5 MB.
+
+Para seleccionar insumos al crear productos, ejecuta [004_producto_insumo.sql](backend/app/db/migrations/004_producto_insumo.sql) en SQL Editor después de las migraciones anteriores. En `/admin/productos` puedes elegir insumos del inventario, crear los que falten y definir la cantidad necesaria para una unidad del producto. **Editar insumos** permite vincular también los productos existentes. Los vínculos se guardan en `producto_insumo`; el catálogo obtiene su contenido desde esas relaciones. Crear o asociar insumos no descuenta existencias.

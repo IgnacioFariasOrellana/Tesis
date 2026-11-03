@@ -1,3 +1,9 @@
+export type ProductSupply = {
+  insumoId: number;
+  name: string;
+  unit: string;
+  quantity: number;
+};
 export type Product = {
   id: string;
   slug: string;
@@ -10,6 +16,7 @@ export type Product = {
   badge: string;
   availableToday: boolean;
   features: string[];
+  supplies: ProductSupply[];
 };
 export type CartItem = {
   lineId: string;

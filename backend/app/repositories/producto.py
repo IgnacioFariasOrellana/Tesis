@@ -57,5 +57,7 @@ def images_by_ids(client: SupabaseClient, ids: list[int]) -> dict[int, str | Non
     return {row["id"]: row["imagen_url"] for row in rows}
 
 
-def insert_product(client: SupabaseClient, values: dict[str, Any]) -> None:
-    client.request("POST", "rest/v1/producto", payload=values)
+def insert_product(client: SupabaseClient, values: dict[str, Any], supplies: list[dict]) -> None:
+    client.request("POST", "rest/v1/rpc/crear_producto_allicam", payload={
+        "p_producto": values, "p_insumos": supplies,
+    })
