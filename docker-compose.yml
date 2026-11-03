@@ -10,7 +10,6 @@ services:
       SUPABASE_URL: ${SUPABASE_URL:-}
       SUPABASE_PUBLISHABLE_KEY: ${SUPABASE_PUBLISHABLE_KEY:-}
       SUPABASE_SECRET_KEY: ${SUPABASE_SECRET_KEY:-}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
       interval: 15s
@@ -18,6 +17,7 @@ services:
       retries: 5
   frontend:
     build: ./frontend
+    command: sh -c "npm install --prefer-offline --no-audit --no-fund && npm run dev"
     ports:
       - "3000:3000"
     volumes:
@@ -27,6 +27,8 @@ services:
       API_URL: http://backend:8000
       NEXT_PUBLIC_API_URL: http://localhost:8000
       SUPABASE_URL: ${SUPABASE_URL:-}
+      NEXT_PUBLIC_SUPABASE_URL: ${SUPABASE_URL:-}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${SUPABASE_PUBLISHABLE_KEY:-}
       WATCHPACK_POLLING: "true"
     depends_on:
       backend:

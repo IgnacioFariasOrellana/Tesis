@@ -5,7 +5,6 @@ import { ArrowLeft, Wrench } from "lucide-react";
 const modules: Record<string, string> = {
   pedidos: "Administración de pedidos",
   pagos: "Pagos y transacciones",
-  usuarios: "Gestión de usuarios",
 };
 
 export function generateStaticParams() {

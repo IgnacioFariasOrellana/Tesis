@@ -1816,7 +1816,7 @@ textarea.input {
   font-weight: 700;
 }
 .sidebar-bottom {
-  margin-top: auto;
+  margin-top: 8px;
   border: 1px solid var(--stroke);
   background: white;
   border-radius: 22px;
@@ -1827,7 +1827,9 @@ textarea.input {
   padding: 12px 10px;
   color: var(--pink);
   font-size: 12px;
+  cursor: pointer;
 }
+.sidebar-nav + .sidebar-bottom { margin-top: auto; }
 .dashboard-main {
   min-width: 0;
 }

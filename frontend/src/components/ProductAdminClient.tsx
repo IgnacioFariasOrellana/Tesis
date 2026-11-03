@@ -6,10 +6,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { currency } from "@/lib/format";
 import type { Product } from "@/lib/types";
+import { createClient } from "@/lib/supabase/client";
 
 export function ProductAdminClient({ products }: { products: Product[] }) {
   const router = useRouter();
-  const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState(false);
@@ -28,10 +28,12 @@ export function ProductAdminClient({ products }: { products: Product[] }) {
     setBusy(true);
     setMessage("");
     try {
+      const { data: { session } } = await createClient().auth.getSession();
+      if (!session) throw new Error("La sesión venció. Vuelve a iniciar sesión.");
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       const response = await fetch(`${apiUrl}/api/admin/products`, {
         method: "POST",
-        headers: { "x-admin-password": password },
+        headers: { Authorization: `Bearer ${session.access_token}` },
         body: data,
       });
       const result = (await response.json()) as { detail?: string };
@@ -74,7 +76,6 @@ export function ProductAdminClient({ products }: { products: Product[] }) {
           </div>
           <label>Foto (JPG, PNG o WebP, máximo 5 MB) <input className="input" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required /></label>
           <label className="today-filter"><input name="availableToday" type="checkbox" /> Disponible para entrega hoy</label>
-          <label>Contraseña de administración <input className="input" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required /></label>
           {message && <p role="status" className={error ? "danger-text" : "success-text"}>{message}</p>}
           <button className="btn btn-primary" type="submit" disabled={busy}>{busy ? "Guardando..." : "Guardar producto"}</button>
         </form>

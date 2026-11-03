@@ -1,9 +1,11 @@
 """Lectura pública y alta administrativa de productos."""
 
-from fastapi import APIRouter, File, Form, Header, HTTPException, UploadFile
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from pydantic import ValidationError
 
-from app.core.auth import verify_admin_password
+from app.core.auth import require_admin
 from app.core.config import ConfigurationError
 from app.integrations.supabase import SupabaseClient, SupabaseError
 from app.repositories.producto import public_products
@@ -38,6 +40,7 @@ def get_product(slug: str):
 
 @router.post("/api/admin/products", status_code=201)
 def add_product(
+    _: Annotated[dict, Depends(require_admin)],
     name: str = Form(...),
     category: str = Form(...),
     description: str = Form(...),
@@ -47,9 +50,7 @@ def add_product(
     features: str = Form(""),
     available_today: str | None = Form(None, alias="availableToday"),
     photo: UploadFile = File(...),
-    admin_password: str = Header("", alias="x-admin-password"),
 ):
-    verify_admin_password(admin_password)
     image = photo.file.read(MAX_IMAGE_BYTES + 1)
     data = NewProduct(
         name=name,
