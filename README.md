@@ -1,98 +1,37 @@
-# Allicam — Tesis PWA (primer incremento funcional)
+# Allicam — Tesis PWA
 
-Este repositorio es un **punto de partida** basado en las diez referencias de interfaz de Allicam y `DESIGN.md`. Stack: **Next.js 15.5.28 / React 19.2.9 / TypeScript**, **FastAPI (Python)** y **Docker Compose**.
+Tienda con Next.js, FastAPI y Supabase. El catálogo usa `categoria` y `producto`; las cuentas usan Supabase Auth y `usuario`. El carrito y los pedidos todavía se guardan en el navegador.
 
-> ⚠️ Prototipo académico: el catálogo se consulta en FastAPI si la API está disponible; en su ausencia funciona con productos de ejemplo. Carrito y pedidos de demostración quedan guardados en `localStorage`. **No hay usuarios reales, pagos, GPS, fotos de entrega ni base de datos**. No usar para ventas reales.
+## Iniciar el proyecto
 
-## Instalación en Windows (PowerShell)
-
-1. Haz una copia de respaldo si tu carpeta `Tesis` ya contiene código. El ZIP tiene archivos en su raíz: extráelos en un directorio vacío o revisa antes de sobrescribir.
-2. Copia el contenido del ZIP a:
-   `C:\Users\naxho\OneDrive\Escritorio\U\2026-2\Formulacion de proyecto de titulo\pwa\Tesis`
-3. Abre la terminal PowerShell en esa carpeta (puedes escribir `powershell` en la barra de dirección del Explorador):
+Completa `.env` en la raíz siguiendo [.env.example](.env.example): `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` y `SUPABASE_SECRET_KEY`. La clave secreta solo llega al backend. Luego ejecuta:
 
 ```powershell
-cd 'C:\Users\naxho\OneDrive\Escritorio\U\2026-2\Formulacion de proyecto de titulo\pwa\Tesis'
-docker compose up --build
+docker compose up --build -d
 ```
 
-Accesos (cuando Docker haya levantado ambos servicios):
-- Tienda: http://localhost:3000
-- Catálogo: http://localhost:3000/catalogo
-- Carrito: http://localhost:3000/carrito
-- Checkout simulado: http://localhost:3000/checkout
-- Mis pedidos: http://localhost:3000/mis-pedidos
-- Cuenta (UI): http://localhost:3000/cuenta
-- Administrador (UI): http://localhost:3000/admin
-- Inventario: http://localhost:3000/admin/inventario
-- Repartidor (UI): http://localhost:3000/repartidor
-- API FastAPI: http://localhost:8000/docs
-- Estado API: http://localhost:8000/health
+Tienda: http://localhost:3000 · API: http://localhost:8000/docs
 
-Detener servicios: `Ctrl + C`, luego `docker compose down`. Si se modifica `package.json` o el Dockerfile, reconstruir con `docker compose up --build` (si se usa volumen anterior de dependencias, `docker compose down -v` elimina el volumen de node_modules).
+Sin Docker, instala `backend/requirements.txt` y ejecuta `uvicorn app.main:app --reload --port 8000` desde `backend`. En `frontend`, crea `.env.local` a partir de [frontend/.env.example](frontend/.env.example), instala dependencias con `npm install` y ejecuta `npm run dev`.
 
-### Alternativa sin Docker
+## Preparar Supabase Auth
 
-En dos terminales diferentes:
+Si ya creaste las tablas, ejecuta **una vez** [001_usuario_auth.sql](backend/app/db/migrations/001_usuario_auth.sql) en Supabase **SQL Editor**. Si partes de cero, genera el esquema desde `backend` con `python -m app.db.schema --output modelo_allicam.sql` y ejecuta el archivo generado. El esquema nuevo ya incluye la relación con Supabase Auth, el perfil automático y la política de lectura del perfil propio.
 
-```powershell
-# Terminal 1: backend (requiere Python 3.12+)
-cd backend
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
+En Supabase **Authentication → Providers**, habilita Email. En **Authentication → URL Configuration**, usa `http://localhost:3000` como Site URL y agrega `http://localhost:3000/auth/confirm` a Redirect URLs. Si la confirmación por correo está activa, el registro pide verificar el correo antes de iniciar sesión.
+
+Registra la primera cuenta desde `/registro`. El registro público siempre crea el rol `cliente`. Para habilitar **tu primer administrador**, ejecuta en SQL Editor, reemplazando el correo por el de esa cuenta:
+
+```sql
+update public.usuario
+set rol = 'admin'
+where auth_user_id = (select id from auth.users where email = 'TU_CORREO@EJEMPLO.COM');
 ```
 
-```powershell
-# Terminal 2: frontend (requiere Node.js 22+)
-cd frontend
-copy .env.example .env.local
-npm install
-npm run dev
-```
+Después, inicia sesión de nuevo. En `/admin/usuarios` podrás asignar `cliente`, `repartidor` y `admin` a otras cuentas. Los paneles `/admin` y `/repartidor` verifican el rol en el servidor; las operaciones administrativas de FastAPI vuelven a verificar el token y el rol en Supabase. `usuario.contrasena_hash` se conserva por compatibilidad con el modelo anterior, pero las contraseñas nuevas se guardan exclusivamente en Supabase Auth.
 
-## Estructura
+## Backend y base de datos
 
-```text
-Tesis/
-├── docker-compose.yml
-├── DESIGN.md                  # Sistema visual proporcionado
-├── docs/mockups/              # Capturas de referencia originales
-├── frontend/
-│   ├── public/images/         # Imágenes de demostración recortadas de mockups
-│   ├── src/app/(shop)/         # Inicio, catálogo, producto, carrito, checkout, cuenta, mis pedidos
-│   ├── src/app/admin/          # Panel administrativo e inventario
-│   ├── src/app/repartidor/     # Panel de reparto simulado
-│   ├── src/components/        # Header, Footer, Card, vistas reutilizables
-│   ├── src/context/           # Estado global del carrito
-│   └── src/lib/               # Tipos, catálogo mock, formato, pedidos demo
-└── backend/
-    └── app/main.py            # GET /health, /api/products y /api/products/{slug}
-```
+`backend/app/api/` contiene rutas por entidad; `repositories/` las consultas por tabla; `services/` la lógica de productos y fotos; `integrations/` el cliente de Supabase; `core/` la configuración y autorización. Los 18 archivos de `backend/app/db/tables/` describen las tablas. `security.sql` contiene RLS y `schema.py` genera el SQL completo. Las migraciones para bases existentes están en `backend/app/db/migrations/`.
 
-## Qué funciona ya
-
-- Navegación responsive y diseño según `DESIGN.md`.
-- Inicio con productos destacados.
-- Catálogo: filtrado por ocasión, categoría, presupuesto, entrega hoy y orden por precio.
-- Detalle: fecha, franja, dedicatoria, sello y extras; agrega al carrito.
-- Carrito: cantidades, eliminación, subtotal y envío **estimado para simulación**.
-- Checkout: validación de campos básicos, registro local de pedidos sin pagos reales.
-- Mis pedidos: muestra órdenes guardadas en el navegador.
-- Panel administrativo y de repartidor con datos ficticios; filtro de inventario; marcar entregas en memoria temporal.
-- FastAPI sirve los 7 productos de ejemplo y expone su documentación interactiva.
-
-## Próximas iteraciones recomendadas
-
-1. PostgreSQL + SQLAlchemy y migraciones Alembic para productos, variantes, materiales, usuarios y pedidos.
-2. Autenticación JWT con roles (cliente, administrador y repartidor), validación backend y contraseñas hasheadas.
-3. CRUD real en el administrador para productos, insumos y pedidos.
-4. Gestión de stock y recetas/BOM por producto, reserva de materiales, transacciones.
-5. Despachos con cobertura, franjas, estados, evidencias y, si se justifica, geolocalización real con consentimiento.
-6. Pasarela de pagos en modo sandbox y webhook verificado; recién después pasar a producción.
-7. Mejorar soporte offline, caché versionada, pruebas, accesibilidad y seguridad, más las evaluaciones definidas para la tesis.
-
-### Notas de diseño
-
-Los JPG del prototipo son **recortes** de las capturas entregadas; no son las fotos originales de los productos. Reemplázalos antes de publicar. Los textos de proveedores, cifras, direcciones y operación son *ficticios*. El `manifest.webmanifest`, los íconos y un **service worker básico** se incluyen como punto de partida. El service worker solo se registra en modo producción (`npm run build && npm start`), guarda recursos estáticos y muestra `/offline.html` cuando falla la navegación. **No es una experiencia offline completa**: no cachea pedidos, sesiones ni la API.
+Para fotos, crea en Supabase Storage un bucket público `product-images` para JPG, PNG o WebP de hasta 5 MB.

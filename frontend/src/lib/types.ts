@@ -1,12 +1,9 @@
-export type Category =
-  "Bandejas de Desayuno" | "Cajas de Pino Grabadas" | "Cestas Dulces" | "Detalles Florales";
-export type Occasion = "Pareja" | "Mamá" | "Papá" | "Cumpleaños" | "Aniversario" | "Agradecimiento";
 export type Product = {
   id: string;
   slug: string;
   name: string;
-  category: Category;
-  occasions: Occasion[];
+  category: string;
+  occasions: string[];
   description: string;
   price: number;
   image: string;

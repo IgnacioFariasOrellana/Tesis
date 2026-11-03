@@ -1,4 +1,6 @@
 import { DashboardShell } from "@/components/DashboardShell";
-export default function DeliveryLayout({ children }: { children: React.ReactNode }) {
-  return <DashboardShell>{children}</DashboardShell>;
+import { requireRole } from "@/lib/supabase/profile";
+export default async function DeliveryLayout({ children }: { children: React.ReactNode }) {
+  await requireRole("repartidor");
+  return <DashboardShell role="repartidor">{children}</DashboardShell>;
 }

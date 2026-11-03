@@ -2,23 +2,47 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowRight, LogIn } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
-export function LoginForm({
-  compact = false,
-  onRegisterClick,
-}: {
-  compact?: boolean;
-  onRegisterClick?: () => void;
-}) {
+export function LoginForm() {
   const [notice, setNotice] = useState("");
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
+  const [busy, setBusy] = useState(false);
+  const router = useRouter();
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setNotice("El inicio de sesión aún no está disponible. No se enviaron ni guardaron tus datos.");
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    setBusy(true);
+    setNotice("");
+    const supabase = createClient();
+    const { data: session, error } = await supabase.auth.signInWithPassword({
+      email: String(data.get("email")),
+      password: String(data.get("password")),
+    });
+    if (error) {
+      setNotice("Correo o contraseña incorrectos, o correo sin confirmar.");
+      setBusy(false);
+      return;
+    }
+    const { data: profile, error: profileError } = await supabase
+      .from("usuario")
+      .select("rol,activo")
+      .eq("auth_user_id", session.user.id)
+      .single();
+    if (profileError || !profile?.activo) {
+      await supabase.auth.signOut();
+      setNotice("No se encontró un perfil activo. Revisa la migración de usuarios.");
+      setBusy(false);
+      return;
+    }
+    router.replace(profile.rol === "admin" ? "/admin" : profile.rol === "repartidor" ? "/repartidor" : "/cuenta");
+    router.refresh();
   }
   return (
     <form
-      className={compact ? "login-form login-form-compact" : "account-card login-form"}
+      className="account-card login-form"
       onSubmit={onSubmit}
     >
       <div className="account-card-title">
@@ -33,6 +57,7 @@ export function LoginForm({
         <input
           className="input"
           type="email"
+          name="email"
           required
           placeholder="tucorreo@ejemplo.com"
           autoComplete="email"
@@ -43,14 +68,15 @@ export function LoginForm({
         <input
           className="input"
           type="password"
+          name="password"
           required
           minLength={8}
           placeholder="Mínimo 8 caracteres"
           autoComplete="current-password"
         />
       </label>
-      <button className="btn btn-primary btn-full" type="submit">
-        Ingresar <ArrowRight size={17} />
+      <button className="btn btn-primary btn-full" type="submit" disabled={busy}>
+        {busy ? "Ingresando..." : "Ingresar"} <ArrowRight size={17} />
       </button>
       {notice && (
         <p className="form-error" role="status">
@@ -59,12 +85,9 @@ export function LoginForm({
       )}
       <p className="login-register">
         ¿Aún no tienes perfil?{" "}
-        <Link href="/registro" onClick={onRegisterClick}>
+        <Link href="/registro">
           Crear perfil
         </Link>
-      </p>
-      <p className="login-demo-hint">
-        Acceso de demostración: la autenticación todavía no está conectada.
       </p>
     </form>
   );

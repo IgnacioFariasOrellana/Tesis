@@ -1,33 +1,18 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { PackageSearch, Truck, Feather, Clock3, Camera } from "lucide-react";
 import { ProductCard } from "./ProductCard";
-import { categories, occasions, products as fallback } from "@/lib/products";
 import type { Product } from "@/lib/types";
 
 type PriceRange = "Todos" | "0-60000" | "60000-80000" | "80000+";
-export function CatalogClient() {
-  const [products, setProducts] = useState<Product[]>(fallback);
+export function CatalogClient({ products }: { products: Product[] }) {
+  const categories = ["Todas", ...new Set(products.map((p) => p.category))];
+  const occasions = ["Todas", ...new Set(products.flatMap((p) => p.occasions))];
   const [occasion, setOccasion] = useState<string>("Todas");
   const [category, setCategory] = useState<string>("Todas");
   const [price, setPrice] = useState<PriceRange>("Todos");
   const [sort, setSort] = useState("popular");
   const [today, setToday] = useState(false);
-  useEffect(() => {
-    const controller = new AbortController();
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/products`, {
-      signal: controller.signal,
-    })
-      .then((r) => {
-        if (!r.ok) throw new Error("API no disponible");
-        return r.json() as Promise<Product[]>;
-      })
-      .then((data) => {
-        if (Array.isArray(data)) setProducts(data);
-      })
-      .catch(() => {});
-    return () => controller.abort();
-  }, []);
   const visible = useMemo(
     () =>
       products

@@ -3,11 +3,15 @@
 import { FormEvent, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowRight, UserPlus } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function RegisterPage() {
   const [notice, setNotice] = useState("");
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
+  const [busy, setBusy] = useState(false);
+  const router = useRouter();
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const password = (form.elements.namedItem("password") as HTMLInputElement).value;
@@ -16,9 +20,29 @@ export default function RegisterPage() {
       setNotice("Las contraseñas no coinciden.");
       return;
     }
-    setNotice(
-      "La creación de perfiles aún no está disponible. No se enviaron ni guardaron tus datos.",
-    );
+    setBusy(true);
+    setNotice("");
+    const data = new FormData(form);
+    const supabase = createClient();
+    const { data: result, error } = await supabase.auth.signUp({
+      email: String(data.get("email")),
+      password,
+      options: {
+        data: { nombre: String(data.get("name")), telefono: String(data.get("phone")) },
+        emailRedirectTo: `${window.location.origin}/auth/confirm`,
+      },
+    });
+    setBusy(false);
+    if (error) {
+      setNotice(error.message);
+      return;
+    }
+    if (!result.session) {
+      setNotice("Revisa tu correo y confirma tu cuenta para iniciar sesión.");
+      return;
+    }
+    router.replace("/cuenta");
+    router.refresh();
   }
   return (
     <div className="account-bg">
@@ -33,7 +57,7 @@ export default function RegisterPage() {
           />
           <span className="eyebrow">✿ UN DETALLE HECHO PARA TI</span>
           <h1>Crea tu perfil</h1>
-          <p>Prepara tus datos para una futura experiencia de compra personalizada.</p>
+          <p>Crea tu cuenta de cliente para comprar y consultar tus pedidos.</p>
         </div>
         <form className="account-card" onSubmit={onSubmit}>
           <div className="account-card-title">
@@ -103,8 +127,8 @@ export default function RegisterPage() {
               />
             </label>
           </div>
-          <button className="btn btn-primary btn-full" type="submit">
-            Crear perfil <ArrowRight size={17} />
+          <button className="btn btn-primary btn-full" type="submit" disabled={busy}>
+            {busy ? "Creando perfil..." : "Crear perfil"} <ArrowRight size={17} />
           </button>
           {notice && (
             <p className="form-error" role="status">
@@ -113,9 +137,6 @@ export default function RegisterPage() {
           )}
           <p className="login-register">
             ¿Ya tienes un perfil? <Link href="/cuenta">Iniciar sesión</Link>
-          </p>
-          <p className="login-demo-hint">
-            Registro de demostración: los perfiles todavía no se guardan.
           </p>
         </form>
       </div>

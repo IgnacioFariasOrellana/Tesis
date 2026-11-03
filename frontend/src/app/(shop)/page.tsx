@@ -2,8 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Gift, Feather, CheckCheck, Truck, ShieldCheck } from "lucide-react";
 import { ProductCard } from "@/components/ProductCard";
-import { products } from "@/lib/products";
-export default function Home() {
+import { getProducts } from "@/lib/product-api";
+export default async function Home() {
+  const products = await getProducts();
+  const featured = products.find((p) => p.slug === "caja-sorpresa-noble") || products[0];
   return (
     <>
       <section className="home-hero">
@@ -20,7 +22,7 @@ export default function Home() {
               <Link className="btn btn-primary" href="/catalogo">
                 Ver catálogo <ArrowRight size={17} />
               </Link>
-              <Link className="btn btn-outline" href="/producto/caja-sorpresa-noble">
+              <Link className="btn btn-outline" href={featured ? `/producto/${featured.slug}` : "/catalogo"}>
                 Armar a medida
               </Link>
             </div>
@@ -36,22 +38,24 @@ export default function Home() {
               </span>
             </div>
           </div>
-          <Link href="/producto/caja-sorpresa-noble" className="hero-feature-product">
-            <div className="hero-img">
-              <Image
-                src="/images/caja-sorpresa.jpg"
-                alt="Caja artesanal con flores"
-                fill
-                priority
-                sizes="(max-width: 800px) 100vw, 45vw"
-              />
-            </div>
-            <div>
-              <span className="overline">COLECCIÓN MATINAL</span>
-              <strong>Amanecer Rosé & Brindis</strong>
-              <small>Panes rústicos de fermentación lenta y flores silvestres.</small>
-            </div>
-          </Link>
+          {featured && (
+            <Link href={`/producto/${featured.slug}`} className="hero-feature-product">
+              <div className="hero-img">
+                <Image
+                  src={featured.image}
+                  alt={featured.name}
+                  fill
+                  priority
+                  sizes="(max-width: 800px) 100vw, 45vw"
+                />
+              </div>
+              <div>
+                <span className="overline">COLECCIÓN MATINAL</span>
+                <strong>{featured.name}</strong>
+                <small>{featured.description}</small>
+              </div>
+            </Link>
+          )}
         </div>
       </section>
       <section className="container home-featured">

@@ -1,7 +1,10 @@
 import Image from "next/image";
 import { LoginForm } from "@/components/LoginForm";
+import { AccountProfile } from "@/components/AccountProfile";
+import { getProfile } from "@/lib/supabase/profile";
 
-export default function AccountPage() {
+export default async function AccountPage() {
+  const profile = await getProfile();
   return (
     <div className="account-bg">
       <div className="container account-wrap account-wrap-narrow">
@@ -15,9 +18,9 @@ export default function AccountPage() {
           />
           <span className="eyebrow">✿ BOUTIQUE DE REGALOS & EXPERIENCIAS</span>
           <h1>Qué gusto verte de nuevo</h1>
-          <p>Ingresa para acceder a tu perfil cuando esté disponible.</p>
+          <p>{profile ? "Consulta tu perfil y accede a tu panel." : "Ingresa para acceder a tu perfil."}</p>
         </div>
-        <LoginForm />
+        {profile ? <AccountProfile profile={profile} /> : <LoginForm />}
       </div>
     </div>
   );

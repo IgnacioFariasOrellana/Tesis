@@ -5,8 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ShoppingBag, Menu, X, UserRound } from "lucide-react";
 import { useCart } from "@/context/cart-context";
-import { useEffect, useRef, useState } from "react";
-import { LoginForm } from "@/components/LoginForm";
+import { useState } from "react";
 
 const links = [
   { href: "/", text: "Inicio" },
@@ -18,23 +17,6 @@ export function Header() {
   const { count } = useCart();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [loginOpen, setLoginOpen] = useState(false);
-  const loginRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function onPointerDown(event: PointerEvent) {
-      if (!loginRef.current?.contains(event.target as Node)) setLoginOpen(false);
-    }
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setLoginOpen(false);
-    }
-    document.addEventListener("pointerdown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("pointerdown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, []);
 
   return (
     <header className={`site-header ${pathname === "/catalogo" ? "catalog-header" : ""}`}>
@@ -44,7 +26,6 @@ export function Header() {
           className="brand"
           onClick={() => {
             setOpen(false);
-            setLoginOpen(false);
           }}
         >
           <Image
@@ -77,26 +58,9 @@ export function Header() {
             <span className="cart-label">Carrito</span>
             <span>({count})</span>
           </Link>
-          <div className="login-menu" ref={loginRef}>
-            <button
-              type="button"
-              className="user-link"
-              aria-label="Iniciar sesión"
-              aria-expanded={loginOpen}
-              aria-controls="login-dropdown"
-              onClick={() => {
-                setLoginOpen((value) => !value);
-                setOpen(false);
-              }}
-            >
-              <UserRound size={19} />
-            </button>
-            {loginOpen && (
-              <div className="login-dropdown" id="login-dropdown">
-                <LoginForm compact onRegisterClick={() => setLoginOpen(false)} />
-              </div>
-            )}
-          </div>
+          <Link href="/cuenta" className="user-link" aria-label="Mi cuenta" onClick={() => setOpen(false)}>
+            <UserRound size={19} />
+          </Link>
           <button
             className="mobile-menu icon-button"
             type="button"
@@ -104,7 +68,6 @@ export function Header() {
             aria-expanded={open}
             onClick={() => {
               setOpen(!open);
-              setLoginOpen(false);
             }}
           >
             {open ? <X /> : <Menu />}
