@@ -1,98 +1,59 @@
-# Allicam — Tesis PWA (primer incremento funcional)
+# Allicam — Tesis PWA
 
-Este repositorio es un **punto de partida** basado en las diez referencias de interfaz de Allicam y `DESIGN.md`. Stack: **Next.js 15.5.28 / React 19.2.9 / TypeScript**, **FastAPI (Python)** y **Docker Compose**.
+Tienda de demostración con Next.js, FastAPI y Supabase. El catálogo lee `categoria` y `producto`. El carrito y los pedidos aún se guardan en el navegador; las demás tablas están preparadas, pero sus funciones todavía no están conectadas.
 
-> ⚠️ Prototipo académico: el catálogo se consulta en FastAPI si la API está disponible; en su ausencia funciona con productos de ejemplo. Carrito y pedidos de demostración quedan guardados en `localStorage`. **No hay usuarios reales, pagos, GPS, fotos de entrega ni base de datos**. No usar para ventas reales.
-
-## Instalación en Windows (PowerShell)
-
-1. Haz una copia de respaldo si tu carpeta `Tesis` ya contiene código. El ZIP tiene archivos en su raíz: extráelos en un directorio vacío o revisa antes de sobrescribir.
-2. Copia el contenido del ZIP a:
-   `C:\Users\naxho\OneDrive\Escritorio\U\2026-2\Formulacion de proyecto de titulo\pwa\Tesis`
-3. Abre la terminal PowerShell en esa carpeta (puedes escribir `powershell` en la barra de dirección del Explorador):
-
-```powershell
-cd 'C:\Users\naxho\OneDrive\Escritorio\U\2026-2\Formulacion de proyecto de titulo\pwa\Tesis'
-docker compose up --build
-```
-
-Accesos (cuando Docker haya levantado ambos servicios):
-- Tienda: http://localhost:3000
-- Catálogo: http://localhost:3000/catalogo
-- Carrito: http://localhost:3000/carrito
-- Checkout simulado: http://localhost:3000/checkout
-- Mis pedidos: http://localhost:3000/mis-pedidos
-- Cuenta (UI): http://localhost:3000/cuenta
-- Administrador (UI): http://localhost:3000/admin
-- Inventario: http://localhost:3000/admin/inventario
-- Repartidor (UI): http://localhost:3000/repartidor
-- API FastAPI: http://localhost:8000/docs
-- Estado API: http://localhost:8000/health
-
-Detener servicios: `Ctrl + C`, luego `docker compose down`. Si se modifica `package.json` o el Dockerfile, reconstruir con `docker compose up --build` (si se usa volumen anterior de dependencias, `docker compose down -v` elimina el volumen de node_modules).
-
-### Alternativa sin Docker
-
-En dos terminales diferentes:
-
-```powershell
-# Terminal 1: backend (requiere Python 3.12+)
-cd backend
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
-```
-
-```powershell
-# Terminal 2: frontend (requiere Node.js 22+)
-cd frontend
-copy .env.example .env.local
-npm install
-npm run dev
-```
-
-## Estructura
+## Estructura del backend
 
 ```text
-Tesis/
-├── docker-compose.yml
-├── DESIGN.md                  # Sistema visual proporcionado
-├── docs/mockups/              # Capturas de referencia originales
-├── frontend/
-│   ├── public/images/         # Imágenes de demostración recortadas de mockups
-│   ├── src/app/(shop)/         # Inicio, catálogo, producto, carrito, checkout, cuenta, mis pedidos
-│   ├── src/app/admin/          # Panel administrativo e inventario
-│   ├── src/app/repartidor/     # Panel de reparto simulado
-│   ├── src/components/        # Header, Footer, Card, vistas reutilizables
-│   ├── src/context/           # Estado global del carrito
-│   └── src/lib/               # Tipos, catálogo mock, formato, pedidos demo
-└── backend/
-    └── app/main.py            # GET /health, /api/products y /api/products/{slug}
+backend/app/
+├── main.py                 # Crea FastAPI y registra rutas
+├── api/producto.py         # GET del catálogo y POST administrativo
+├── core/                   # Variables de entorno y contraseña de administración
+├── schemas/producto.py     # Datos de entrada y salida
+├── repositories/           # categoria.py y producto.py: consultas por tabla
+├── services/               # Validación de productos y fotos en Storage
+├── integrations/           # Cliente HTTP de Supabase
+└── db/
+    ├── tables/             # Un archivo SQL con el nombre de cada tabla (18)
+    ├── security.sql         # RLS y permisos
+    ├── schema.py            # Genera el SQL completo en orden de dependencias
+    └── legacy/             # Limpieza opcional de ejemplos anteriores
 ```
 
-## Qué funciona ya
+El frontend solo presenta el formulario y llama a FastAPI. `SUPABASE_SECRET_KEY` y `ADMIN_PASSWORD` pertenecen exclusivamente al backend.
 
-- Navegación responsive y diseño según `DESIGN.md`.
-- Inicio con productos destacados.
-- Catálogo: filtrado por ocasión, categoría, presupuesto, entrega hoy y orden por precio.
-- Detalle: fecha, franja, dedicatoria, sello y extras; agrega al carrito.
-- Carrito: cantidades, eliminación, subtotal y envío **estimado para simulación**.
-- Checkout: validación de campos básicos, registro local de pedidos sin pagos reales.
-- Mis pedidos: muestra órdenes guardadas en el navegador.
-- Panel administrativo y de repartidor con datos ficticios; filtro de inventario; marcar entregas en memoria temporal.
-- FastAPI sirve los 7 productos de ejemplo y expone su documentación interactiva.
+## Crear las tablas en Supabase
 
-## Próximas iteraciones recomendadas
+Desde `backend`, genera el archivo que reúne los 18 SQL de `app/db/tables/` y `security.sql`:
 
-1. PostgreSQL + SQLAlchemy y migraciones Alembic para productos, variantes, materiales, usuarios y pedidos.
-2. Autenticación JWT con roles (cliente, administrador y repartidor), validación backend y contraseñas hasheadas.
-3. CRUD real en el administrador para productos, insumos y pedidos.
-4. Gestión de stock y recetas/BOM por producto, reserva de materiales, transacciones.
-5. Despachos con cobertura, franjas, estados, evidencias y, si se justifica, geolocalización real con consentimiento.
-6. Pasarela de pagos en modo sandbox y webhook verificado; recién después pasar a producción.
-7. Mejorar soporte offline, caché versionada, pruebas, accesibilidad y seguridad, más las evaluaciones definidas para la tesis.
+```powershell
+python -m app.db.schema --output modelo_allicam.sql
+```
 
-### Notas de diseño
+Si usas Docker y no tienes Python instalado en Windows:
 
-Los JPG del prototipo son **recortes** de las capturas entregadas; no son las fotos originales de los productos. Reemplázalos antes de publicar. Los textos de proveedores, cifras, direcciones y operación son *ficticios*. El `manifest.webmanifest`, los íconos y un **service worker básico** se incluyen como punto de partida. El service worker solo se registra en modo producción (`npm run build && npm start`), guarda recursos estáticos y muestra `/offline.html` cuando falla la navegación. **No es una experiencia offline completa**: no cachea pedidos, sesiones ni la API.
+```powershell
+docker compose up --build -d
+docker compose exec backend python -m app.db.schema --output /app/app/db/modelo_allicam.sql
+```
+
+En ese caso el archivo queda en `backend/app/db/modelo_allicam.sql`. Copia su contenido al **SQL Editor** de Supabase y ejecútalo una vez. El generador no inserta productos de ejemplo ni borra tablas existentes. La tabla anterior `public.products`, si existe, se conserva y la aplicación ya no la usa. Si necesitas retirar sus siete ejemplos, revisa [remove_example_products.sql](backend/app/db/legacy/remove_example_products.sql) antes de ejecutarlo.
+
+En **Storage**, crea un bucket público llamado `product-images` para fotos JPG, PNG o WebP de hasta 5 MB.
+
+## Configuración
+
+En la raíz, crea `.env` a partir de [.env.example](.env.example) y completa:
+
+```dotenv
+SUPABASE_URL=https://TU_PROYECTO.supabase.co
+SUPABASE_PUBLISHABLE_KEY=sb_publishable_TU_CLAVE
+SUPABASE_SECRET_KEY=sb_secret_TU_CLAVE
+ADMIN_PASSWORD=UNA_CONTRASENA_LARGA_Y_UNICA
+```
+
+Ejecuta `docker compose up --build` desde la raíz. La tienda está en `http://localhost:3000`, la administración de productos en `http://localhost:3000/admin/productos` y la documentación de FastAPI en `http://localhost:8000/docs`.
+
+Para ejecutar sin Docker, instala `backend/requirements.txt`, define las cuatro variables en el entorno del proceso FastAPI y ejecuta `uvicorn app.main:app --reload --port 8000` desde `backend`. En `frontend`, crea `.env.local` a partir de [frontend/.env.example](frontend/.env.example), instala dependencias y ejecuta `npm run dev`.
+
+La contraseña compartida del formulario es una protección inicial. Antes de publicar una tienda real se necesitan sesiones y roles de administrador. `usuario.contrasena_hash` sigue el diagrama y todavía no está conectado con Supabase Auth.

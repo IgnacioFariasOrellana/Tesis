@@ -2727,6 +2727,21 @@ textarea.input {
   }
 }
 
+.admin-product-form form { display: grid; gap: 18px; margin-top: 20px; }
+.admin-product-form label { display: grid; gap: 7px; font-weight: 600; }
+.admin-product-form .today-filter { display: flex; align-items: center; gap: 8px; }
+.admin-product-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.admin-product-form textarea { resize: vertical; }
+.admin-product-form button { justify-self: start; }
+.admin-product-list { margin-top: 24px; }
+.admin-product-grid { display: grid; gap: 12px; margin-top: 18px; }
+.admin-product-row { display: flex; align-items: center; gap: 16px; padding: 10px 0; border-top: 1px solid #eee; }
+.admin-product-row img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; }
+.admin-product-row div { display: grid; gap: 3px; flex: 1; min-width: 0; }
+.admin-product-row strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-product-row small { color: #666; }
+@media (max-width: 700px) { .admin-product-fields { grid-template-columns: 1fr; } }
+
 /* Acceso desde el icono de persona */
 .login-menu {
   position: relative;

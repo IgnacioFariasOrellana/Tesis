@@ -16,9 +16,8 @@ import {
 import { Product } from "@/lib/types";
 import { useCart } from "@/context/cart-context";
 import { currency } from "@/lib/format";
-import { products } from "@/lib/products";
 import { ProductCard } from "./ProductCard";
-export function ProductDetailView({ product }: { product: Product }) {
+export function ProductDetailView({ product, relatedProducts }: { product: Product; relatedProducts: Product[] }) {
   const { addItem } = useCart();
   const router = useRouter();
   const [date, setDate] = useState("");
@@ -194,10 +193,7 @@ export function ProductDetailView({ product }: { product: Product }) {
           </Link>
         </div>
         <div className="products-grid">
-          {products
-            .filter((p) => p.id !== product.id)
-            .slice(0, 3)
-            .map((p) => (
+          {relatedProducts.map((p) => (
               <ProductCard product={p} key={p.id} />
             ))}
         </div>
