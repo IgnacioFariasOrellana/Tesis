@@ -159,7 +159,7 @@ export default function CartPage() {
                 </button>
               </div>
               {couponNotice && (
-                <p className="inline-warning">No hay cupones habilitados en esta demostración.</p>
+                <p className="inline-warning">Este cupón no se puede aplicar en este momento.</p>
               )}
             </div>
           </div>
@@ -185,15 +185,15 @@ export default function CartPage() {
               <div className="secure-notice">
                 <ShieldCheck />
                 <div>
-                  <strong>Compra de demostración</strong>
+                  <strong>Pedido sujeto a confirmación</strong>
                   <p>
-                    Aún no se procesa autenticación bancaria ni pagos reales. Los pedidos se guardan
-                    únicamente en este navegador.
+                    El carrito se conserva en este navegador. Al confirmar, el pedido se registra
+                    en tu cuenta. El pago se coordina con el taller.
                   </p>
                 </div>
               </div>
               <Link href="/checkout" className="btn btn-primary btn-full">
-                Continuar compra <ArrowRight size={17} />
+                Continuar pedido <ArrowRight size={17} />
               </Link>
               <Link href="/catalogo" className="back-link">
                 Seguir explorando el catálogo

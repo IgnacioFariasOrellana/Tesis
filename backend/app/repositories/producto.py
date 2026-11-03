@@ -48,5 +48,14 @@ def slug_exists(client: SupabaseClient, slug: str) -> bool:
     return bool(rows)
 
 
+def images_by_ids(client: SupabaseClient, ids: list[int]) -> dict[int, str | None]:
+    if not ids:
+        return {}
+    rows = client.request("GET", "rest/v1/producto", query={
+        "select": "id,imagen_url", "id": f"in.({','.join(map(str, ids))})",
+    })
+    return {row["id"]: row["imagen_url"] for row in rows}
+
+
 def insert_product(client: SupabaseClient, values: dict[str, Any]) -> None:
     client.request("POST", "rest/v1/producto", payload=values)

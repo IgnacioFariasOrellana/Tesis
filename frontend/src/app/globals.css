@@ -2812,6 +2812,7 @@ textarea.input {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+.optional-label { color: var(--muted); font-size: 12px; font-weight: 400; }
 .login-demo-hint {
   text-align: center;
   color: var(--muted);

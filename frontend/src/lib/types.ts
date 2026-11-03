@@ -19,14 +19,6 @@ export type CartItem = {
   deliveryDate: string;
   deliverySlot: string;
   extraPrice: number;
-};
-export type DemoOrder = {
-  id: string;
-  createdAt: string;
-  recipient: string;
-  address: string;
-  items: CartItem[];
-  total: number;
-  status: "Recibido";
-  instructions?: string;
+  balloon?: boolean;
+  treat?: boolean;
 };

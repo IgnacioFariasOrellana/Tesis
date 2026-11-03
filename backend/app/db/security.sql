@@ -25,11 +25,15 @@ create policy "Usuario consulta su perfil" on public.usuario
 create or replace function public.crear_perfil_usuario()
 returns trigger language plpgsql security definer set search_path = '' as $$
 begin
-  insert into public.usuario (auth_user_id, correo, nombres, telefono, rol, activo)
+  insert into public.usuario (
+    auth_user_id, correo, nombres, apellido_paterno, apellido_materno, telefono, rol, activo
+  )
   values (
     new.id,
     new.email,
-    nullif(trim(coalesce(new.raw_user_meta_data ->> 'nombre', '')), ''),
+    nullif(trim(coalesce(new.raw_user_meta_data ->> 'nombres', '')), ''),
+    nullif(trim(coalesce(new.raw_user_meta_data ->> 'apellido_paterno', '')), ''),
+    nullif(trim(coalesce(new.raw_user_meta_data ->> 'apellido_materno', '')), ''),
     nullif(trim(coalesce(new.raw_user_meta_data ->> 'telefono', '')), ''),
     'cliente',
     true

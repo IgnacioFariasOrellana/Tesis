@@ -5,6 +5,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.producto import router as producto_router
 from app.api.usuario import router as usuario_router
+from app.api.insumo import router as insumo_router
+from app.api.pedido import router as pedido_router
+from app.api.pago import router as pago_router
+from app.api.ruta_reparto import router as ruta_reparto_router
 
 app = FastAPI(title="Allicam API", version="0.3.0")
 app.add_middleware(
@@ -15,6 +19,10 @@ app.add_middleware(
 )
 app.include_router(producto_router)
 app.include_router(usuario_router)
+app.include_router(insumo_router)
+app.include_router(pedido_router)
+app.include_router(pago_router)
+app.include_router(ruta_reparto_router)
 
 
 @app.get("/health")

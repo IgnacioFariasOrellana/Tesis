@@ -1,189 +1,67 @@
 import Link from "next/link";
-import {
-  AlertTriangle,
-  ArrowRight,
-  Boxes,
-  Gift,
-  Package,
-  Truck,
-  Users,
-  Wallet,
-  TrendingUp,
-  ClipboardList,
-} from "lucide-react";
-export default function AdminPage() {
+import { AlertTriangle, ArrowRight, Boxes, Gift, Package, Truck, Users, Wallet } from "lucide-react";
+import { getAuthorizedData } from "@/lib/auth-api";
+import { getProducts } from "@/lib/product-api";
+import { currency } from "@/lib/format";
+import type { DatabaseOrder, DatabasePayment, InventoryItem } from "@/lib/db-types";
+
+export default async function AdminPage() {
+  const [orders, payments, inventory, products] = await Promise.all([
+    getAuthorizedData<DatabaseOrder[]>("/api/admin/orders"),
+    getAuthorizedData<DatabasePayment[]>("/api/admin/payments"),
+    getAuthorizedData<InventoryItem[]>("/api/admin/inventory"),
+    getProducts(),
+  ]);
+  const pending = orders.filter((order) => !["entregado", "cancelado"].includes(order.status.toLowerCase()));
+  const paid = payments.filter((payment) => ["pagado", "aprobado", "completado"].includes((payment.status || "").toLowerCase()));
+  const lowStock = inventory.filter((item) => item.stock_actual < item.stock_minimo);
   const quick = [
-    { Icon: Gift, title: "Productos", label: "Catálogo y fichas", href: "/admin/productos" },
-    { Icon: Package, title: "Pedidos", label: "Cola de armado", href: "/admin/pedidos" },
-    { Icon: Wallet, title: "Pagos", label: "Módulo pendiente", href: "/admin/pagos" },
-    { Icon: Boxes, title: "Inventario", label: "Alertas de stock", href: "/admin/inventario" },
-    { Icon: Truck, title: "Entregas", label: "Ruta demostrativa", href: "/repartidor" },
-    { Icon: Users, title: "Usuarios", label: "Módulo pendiente", href: "/admin/usuarios" },
+    { Icon: Gift, title: "Productos", label: `${products.length} publicados`, href: "/admin/productos" },
+    { Icon: Package, title: "Pedidos", label: `${orders.length} registrados`, href: "/admin/pedidos" },
+    { Icon: Wallet, title: "Pagos", label: `${payments.length} registrados`, href: "/admin/pagos" },
+    { Icon: Boxes, title: "Inventario", label: `${inventory.length} insumos`, href: "/admin/inventario" },
+    { Icon: Truck, title: "Reparto", label: "Rutas asignadas", href: "/admin/pedidos" },
+    { Icon: Users, title: "Usuarios", label: "Gestionar roles", href: "/admin/usuarios" },
   ];
-  return (
-    <>
-      <div className="dashboard-welcome">
-        <div>
-          <div className="overline">● TALLER CENTRAL · SESIÓN DE DEMOSTRACIÓN</div>
-          <h1>
-            Hola, equipo Allicam <em>(Administración)</em>
-          </h1>
-          <p>Panel de operaciones con datos ficticios para visualizar el diseño.</p>
-        </div>
-        <div className="operational-status">
-          ● Catálogo online habilitado <small>Modo demostración</small>
-        </div>
-      </div>
-      <div className="metric-grid">
-        <div className="metric-card">
-          <div className="overline">PRODUCCIÓN MATUTINA</div>
-          <strong>16</strong>
-          <span>pedidos agendados</span>
-          <div className="progress">
-            <i style={{ width: "68%" }} />
-          </div>
-          <small>11 de 16 listos</small>
-        </div>
-        <div className="metric-card">
-          <div className="overline">INGRESOS DEL DÍA</div>
-          <strong>$1.150.000</strong>
-          <span>Valor ilustrativo, no conectado</span>
-          <p className="success-text">
-            <TrendingUp size={17} /> +18,4% de ejemplo
-          </p>
-        </div>
-        <div className="metric-card">
-          <div className="overline">ATENCIÓN TALLER</div>
-          <strong>2</strong>
-          <span>insumos en alerta</span>
-          <p>
-            <AlertTriangle size={16} /> Caja de pino · Lacre
-          </p>
-        </div>
-        <div className="metric-card">
-          <div className="overline">CUMPLIMIENTO FRANJAS</div>
-          <strong>99,2%</strong>
-          <span>Indicador ficticio</span>
-          <div className="progress green">
-            <i style={{ width: "99%" }} />
-          </div>
-        </div>
-      </div>
-      <div className="section-between admin-subheading">
-        <h2>Accesos rápidos operacionales</h2>
-        <span className="soft-pill">6 módulos principales</span>
-      </div>
-      <div className="quick-grid">
-        {quick.map(({ Icon, title, label, href }) => (
-          <Link href={href} key={href} className="quick-card">
-            <Icon size={27} />
-            <strong>{title}</strong>
-            <small>{label}</small>
-          </Link>
-        ))}
-      </div>
-      <div className="admin-lower">
-        <section className="dashboard-card">
-          <div className="section-between">
-            <div>
-              <h2>Cola Matutina de Producción & Envíos</h2>
-              <p>Ejemplo de priorización por franja horaria de entrega.</p>
-            </div>
-            <span className="soft-pill">Datos simulados</span>
-          </div>
-          <div className="table-scroll">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>ID / COMPOSICIÓN</th>
-                  <th>DESTINATARIO</th>
-                  <th>FRANJA</th>
-                  <th>ESTADO TALLER</th>
-                  <th>REPARTIDOR</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  [
-                    "AL-2401",
-                    "Box Desayuno Botánico",
-                    "Valentina Rosas",
-                    "09:00 – 10:30",
-                    "Caligrafía & Lacre",
-                    "Matías V.",
-                  ],
-                  [
-                    "AL-2402",
-                    "Delicia Dulce & Té",
-                    "Ignacio Morales",
-                    "10:00 – 11:30",
-                    "En Horneado",
-                    "Por asignar",
-                  ],
-                  [
-                    "AL-2399",
-                    "Ramillete & Cava Rosé",
-                    "Constanza Pezoa",
-                    "09:00 – 10:00",
-                    "Listo para ruta",
-                    "Esteban G.",
-                  ],
-                  [
-                    "AL-2404",
-                    "Petit Déjeuner Salé",
-                    "Martín Benítez",
-                    "11:00 – 12:30",
-                    "Empaque Floristería",
-                    "Matías V.",
-                  ],
-                ].map((r) => (
-                  <tr key={r[0]}>
-                    <td>
-                      <strong>#{r[0]}</strong>
-                      <small>{r[1]}</small>
-                    </td>
-                    <td>{r[2]}</td>
-                    <td>{r[3]}</td>
-                    <td>
-                      <span className="status-pill">{r[4]}</span>
-                    </td>
-                    <td>{r[5]}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <Link className="text-link" href="/admin/pedidos">
-            Ver pedidos en preparación <ArrowRight size={16} />
-          </Link>
-        </section>
-        <div className="admin-side-panels">
-          <section className="dashboard-card">
-            <div className="overline">DEDICATORIA ARTESANAL</div>
-            <h3>Carta extensa solicitada</h3>
-            <blockquote>
-              “Para quien llena de calma mis mañanas y hace que cada aniversario sea tan dulce y
-              luminoso…”
-            </blockquote>
-            <small>Pedido de ejemplo #AL-2401</small>
-          </section>
-          <section className="dashboard-card">
-            <div className="overline">ALERTAS DE INSUMOS</div>
-            <h3>Atención de inventario</h3>
-            <p>
-              <AlertTriangle size={16} /> Cajas de Pino 25×25 — Crítico
-            </p>
-            <p>Sellos de lacre — Nivel bajo</p>
-            <Link href="/admin/inventario" className="text-link">
-              Gestionar inventario <ArrowRight size={16} />
-            </Link>
-          </section>
-        </div>
-      </div>
-      <p className="dashboard-footnote">
-        <ClipboardList size={14} /> Indicadores, clientes y pedidos mostrados son exclusivamente
-        datos de demostración.
-      </p>
-    </>
-  );
+
+  return <>
+    <div className="dashboard-welcome"><div>
+      <div className="overline">TALLER CENTRAL</div>
+      <h1>Panel de administración</h1>
+      <p>Estado actual de pedidos, pagos, productos e insumos registrados en Supabase.</p>
+    </div></div>
+    <div className="metric-grid">
+      <div className="metric-card"><div className="overline">PEDIDOS PENDIENTES</div><strong>{pending.length}</strong><span>De {orders.length} pedidos registrados</span></div>
+      <div className="metric-card"><div className="overline">PAGOS CONFIRMADOS</div><strong>{currency(paid.reduce((sum, payment) => sum + payment.amount, 0))}</strong><span>{paid.length} pagos registrados como completados</span></div>
+      <div className="metric-card"><div className="overline">INSUMOS BAJO MÍNIMO</div><strong>{lowStock.length}</strong><span>{inventory.length} insumos activos</span></div>
+      <div className="metric-card"><div className="overline">PRODUCTOS PUBLICADOS</div><strong>{products.length}</strong><span>Disponibles en el catálogo</span></div>
+    </div>
+    <div className="section-between admin-subheading"><h2>Accesos rápidos</h2></div>
+    <div className="quick-grid">{quick.map(({ Icon, title, label, href }) =>
+      <Link href={href} key={title} className="quick-card"><Icon size={27} /><strong>{title}</strong><small>{label}</small></Link>
+    )}</div>
+    <div className="admin-lower">
+      <section className="dashboard-card">
+        <div className="section-between"><div><h2>Pedidos recientes</h2><p>Últimos pedidos registrados en la base de datos.</p></div></div>
+        {orders.length === 0 ? <p>Aún no hay pedidos registrados.</p> : <div className="table-scroll"><table className="data-table">
+          <thead><tr><th>PEDIDO</th><th>DESTINATARIO</th><th>FECHA DE ENTREGA</th><th>ESTADO</th><th>TOTAL</th></tr></thead>
+          <tbody>{orders.slice(0, 5).map((order) => <tr key={order.id}>
+            <td><strong>#{order.number}</strong><small>{order.items.map((item) => item.name).join(", ")}</small></td>
+            <td>{order.recipient || "Sin destinatario"}</td>
+            <td>{order.deliveryDate || "Sin fecha"}</td>
+            <td><span className="status-pill">{order.status}</span></td>
+            <td>{currency(order.total)}</td>
+          </tr>)}</tbody>
+        </table></div>}
+        <Link className="text-link" href="/admin/pedidos">Ver todos los pedidos <ArrowRight size={16} /></Link>
+      </section>
+      <div className="admin-side-panels"><section className="dashboard-card">
+        <div className="overline">ALERTAS DE INSUMOS</div><h3>Stock bajo</h3>
+        {lowStock.length === 0 ? <p>No hay insumos bajo el mínimo.</p> : lowStock.slice(0, 5).map((item) =>
+          <p key={item.id}><AlertTriangle size={16} /> {item.nombre || `Insumo #${item.id}`} · {item.stock_actual} de {item.stock_minimo} {item.unidad_medida || "unidades"}</p>
+        )}
+        <Link href="/admin/inventario" className="text-link">Ver inventario <ArrowRight size={16} /></Link>
+      </section></div>
+    </div>
+  </>;
 }

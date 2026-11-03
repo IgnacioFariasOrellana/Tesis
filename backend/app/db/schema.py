@@ -34,6 +34,7 @@ def render_schema() -> str:
     for table in TABLE_ORDER:
         parts.append((DB_DIR / "tables" / f"{table}.sql").read_text(encoding="utf-8").strip())
     parts.append((DB_DIR / "security.sql").read_text(encoding="utf-8").strip())
+    parts.append((DB_DIR / "functions" / "pedido.sql").read_text(encoding="utf-8").strip())
     parts.append("commit;")
     return "\n\n".join(parts) + "\n"
 
