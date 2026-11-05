@@ -1,0 +1,94 @@
+/* Mis pedidos */
+.orders-page {
+  padding: 40px 0;
+}
+.orders-page > h1 {
+  font-size: 35px;
+  margin-top: 10px;
+}
+.orders-page > .section-lead {
+  margin-bottom: 28px;
+}
+.orders-list {
+  display: grid;
+  gap: 20px;
+}
+.order-card {
+  background: white;
+  border: 1px solid var(--stroke);
+  border-radius: 22px;
+  padding: 23px;
+}
+.order-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--stroke);
+  padding-bottom: 16px;
+  gap: 10px;
+  color: var(--pink-dark);
+  font-weight: 700;
+}
+.order-top small {
+  color: var(--muted);
+  font-weight: 400;
+}
+.order-content {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 22px;
+  padding: 22px 0;
+}
+.order-content h3 {
+  font-size: 17px;
+}
+.order-content p {
+  font-size: 12px;
+  color: var(--muted);
+}
+.order-timeline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: space-between;
+  border-radius: 16px;
+  background: #faf7f4;
+  padding: 18px;
+}
+.order-timeline span {
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 7px;
+  text-align: center;
+  color: #a49a9d;
+}
+.order-timeline svg {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  padding: 6px;
+  background: #eae5e5;
+}
+.order-timeline .done {
+  color: var(--green);
+}
+.order-timeline .done svg {
+  background: #0f9069;
+  color: white;
+}
+.ordered-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.ordered-items > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--stroke);
+  padding: 6px 12px 6px 6px;
+  border-radius: 14px;
+  font-size: 12px;
+}

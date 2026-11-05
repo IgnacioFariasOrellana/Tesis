@@ -1,0 +1,45 @@
+/* Recorrido editorial sin tarjetas */
+.steps-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 42px;
+}
+.steps-grid > li {
+  position: relative;
+  padding: 0 8px 0 0;
+}
+.step-marker {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 20px;
+  color: var(--pink-dark);
+}
+.step-marker svg {
+  width: 57px;
+  height: 57px;
+  padding: 16px;
+  border: 1px solid #e9bccb;
+  border-radius: 50%;
+  background: #fffafc;
+  flex: none;
+  stroke-width: 1.6;
+}
+.step-marker span {
+  color: var(--pink-dark);
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-weight: 700;
+}
+.steps-grid h3 {
+  font-family: Georgia, serif;
+  font-size: 21px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.steps-grid p {
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 295px;
+}

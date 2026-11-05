@@ -1,0 +1,84 @@
+@media (max-width: 1200px) {
+  .admin-dashboard .dashboard-content {
+    padding: 24px;
+  }
+  .admin-metrics-four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .admin-metrics-four .admin-metric-body {
+    flex-direction: row;
+    text-align: left;
+  }
+  .admin-overview-grid {
+    grid-template-columns: minmax(0, 1.45fr) minmax(245px, 1fr);
+    gap: 16px;
+  }
+}
+@media (max-width: 800px) {
+  .admin-dashboard .dashboard-sidebar {
+    border-right: 0;
+    border-bottom: 1px solid var(--admin-border);
+  }
+  .admin-shortcuts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .admin-overview-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 570px) {
+  .admin-dashboard .dashboard-content {
+    padding: 18px 15px 32px;
+  }
+  .admin-dashboard .dashboard-top {
+    padding: 11px 15px;
+  }
+  .admin-metrics {
+    gap: 10px;
+  }
+  .admin-metrics-two,
+  .admin-metrics-four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .admin-metric {
+    padding: 13px 9px;
+  }
+  .admin-metric-heading {
+    gap: 6px;
+    align-items: flex-start;
+  }
+  .admin-metric-icon {
+    width: 27px;
+    height: 27px;
+  }
+  .admin-metric-heading h2 {
+    font-size: 9px;
+    align-self: center;
+  }
+  .admin-metric-body,
+  .admin-metrics-four .admin-metric-body {
+    flex-direction: column;
+    text-align: center;
+    gap: 9px;
+  }
+  .admin-ring {
+    width: 92px;
+    height: 92px;
+    flex-basis: 92px;
+  }
+  .admin-ring-label strong {
+    font-size: 25px;
+  }
+  .admin-metric-body p {
+    font-size: 9px;
+  }
+  .admin-dashboard .dashboard-card {
+    padding: 19px;
+  }
+  .admin-table-heading {
+    padding: 20px 18px 10px;
+  }
+  .admin-bar-chart {
+    gap: 7px;
+  }
+}

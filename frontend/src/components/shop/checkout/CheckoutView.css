@@ -1,0 +1,143 @@
+/* Checkout y cuenta */
+.checkout-page {
+  padding-bottom: 20px;
+}
+.checkout-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.8fr);
+  gap: 25px;
+}
+.checkout-intro {
+  margin-bottom: 22px;
+  padding: 20px;
+  background: linear-gradient(110deg, #f1fff6, #fffaf4);
+  border-radius: 20px;
+}
+.checkout-intro .eyebrow {
+  margin-bottom: 10px;
+}
+.checkout-intro h1 {
+  font-size: 30px;
+}
+.checkout-intro p {
+  color: var(--muted);
+  margin: 0;
+}
+.checkout-form {
+  display: grid;
+  gap: 15px;
+}
+.form-section {
+  background: white;
+  border: 1px solid var(--stroke);
+  padding: 21px;
+  border-radius: 24px;
+}
+.form-section h2 {
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 18px;
+}
+.form-section h2 > span {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #ffe4ed;
+  color: var(--pink-dark);
+  font-weight: 700;
+  font-size: 12px;
+}
+.form-section h2 svg {
+  color: var(--pink);
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.form-section label,
+.account-card label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+}
+.form-section label > .input,
+.account-card label > .input {
+  margin-top: 7px;
+}
+.form-section p {
+  color: var(--muted);
+  font-size: 13px;
+}
+.pale-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  border: 1px solid #e8f0e8;
+  border-radius: 14px;
+  background: #f2fbf5;
+  padding: 12px;
+  color: #2a7750;
+  font-size: 12px;
+}
+.pale-note p {
+  margin: 0;
+}
+.consent {
+  display: flex !important;
+  gap: 9px;
+  align-items: flex-start;
+  font-weight: 400 !important;
+  color: var(--muted);
+  margin-top: 14px;
+}
+.consent input {
+  flex-shrink: 0;
+}
+.summary-card.sticky {
+  position: sticky;
+  top: 100px;
+}
+.order-mini-items {
+  display: grid;
+  gap: 12px;
+}
+.order-mini {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--stroke);
+  padding-bottom: 12px;
+}
+.mini-photo {
+  position: relative;
+  width: 60px;
+  height: 58px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f9eced;
+}
+.mini-photo img {
+  object-fit: cover;
+}
+.order-mini > div:nth-child(2) {
+  flex: 1;
+}
+.order-mini strong,
+.order-mini small {
+  display: block;
+  font-size: 11px;
+}
+.order-mini b {
+  font-size: 11px;
+  color: var(--pink-dark);
+  white-space: nowrap;
+}
+.order-mini small {
+  color: var(--muted);
+}

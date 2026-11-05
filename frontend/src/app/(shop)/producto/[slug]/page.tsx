@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getProduct, getProducts } from "@/lib/product-api";
-import { ProductDetailView } from "@/components/ProductDetailView";
+import { ProductDetailView } from "@/components/catalog/ProductDetailView";
 
 export default async function ProductPage({
   params,

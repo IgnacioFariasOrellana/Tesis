@@ -1,0 +1,188 @@
+.admin-finance-card {
+  display: flex;
+  flex-direction: column;
+}
+.admin-money-label {
+  font-size: 11px;
+  color: var(--admin-muted);
+}
+.admin-money {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 7px;
+  font-size: clamp(25px, 2.5vw, 36px);
+  letter-spacing: -0.045em;
+  margin: 5px 0 15px;
+  color: #3c655a;
+  overflow-wrap: anywhere;
+}
+.admin-money small {
+  font-size: 10px;
+  letter-spacing: 0;
+  color: #8b9c95;
+  font-weight: 500;
+}
+.admin-summary-list {
+  margin: 0;
+}
+.admin-summary-list > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid #f0edef;
+  font-size: 11px;
+}
+.admin-summary-list dt {
+  color: var(--admin-muted);
+}
+.admin-summary-list dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.admin-finance-card .text-link {
+  margin-top: auto;
+  padding-top: 15px;
+}
+
+.admin-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 13px;
+  margin: 22px 0;
+}
+.admin-shortcut {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  background: #fff;
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  padding: 15px 12px;
+}
+.admin-shortcut:hover {
+  border-color: #d9b6c6;
+  box-shadow: 0 4px 12px #ad598012;
+}
+.admin-shortcut-icon {
+  display: grid;
+  place-items: center;
+  height: 35px;
+  width: 35px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: #fbf1f5;
+  color: #af5279;
+}
+.admin-shortcut > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.admin-shortcut strong {
+  font-size: 11px;
+  font-weight: 600;
+}
+.admin-shortcut small {
+  font-size: 9px;
+  color: var(--admin-muted);
+}
+.admin-shortcut > svg {
+  margin-left: auto;
+  color: #ba9aa9;
+  flex-shrink: 0;
+}
+.admin-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 27px;
+  padding: 5px 9px;
+  background: #f6edf2;
+  color: #9c5575;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.admin-count-badge.is-alert {
+  background: #fcf0d9;
+  color: #9a6c25;
+}
+.admin-alert-list,
+.admin-agenda {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 15px;
+}
+.admin-alert-list li,
+.admin-agenda li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.admin-alert-list li > svg {
+  color: #b17e34;
+  flex-shrink: 0;
+}
+.admin-alert-list strong,
+.admin-agenda strong {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+}
+.admin-alert-list small,
+.admin-agenda small {
+  display: block;
+  color: var(--admin-muted);
+  font-size: 10px;
+  margin-top: 3px;
+}
+.admin-agenda-day {
+  display: grid;
+  place-items: center;
+  flex: 0 0 36px;
+  height: 39px;
+  border-radius: 9px;
+  background: #f6eaf0;
+  color: #a05276;
+  font-size: 16px;
+  font-weight: 600;
+}
+.admin-inline-empty {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.admin-inline-empty svg {
+  color: #6f998a;
+  flex-shrink: 0;
+}
+.admin-inline-empty p {
+  margin: 0;
+  line-height: 1.8;
+}
+.admin-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 18px;
+}
+.admin-empty > span {
+  display: grid;
+  place-items: center;
+  width: 67px;
+  height: 67px;
+  border-radius: 21px;
+  background: #fbf0f5;
+  color: #b96a8d;
+  margin-bottom: 21px;
+}
+.admin-empty p {
+  max-width: 290px;
+  line-height: 1.8;
+}

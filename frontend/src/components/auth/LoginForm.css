@@ -1,0 +1,57 @@
+.login-form {
+  gap: 15px;
+}
+.login-form-compact {
+  display: flex;
+  flex-direction: column;
+}
+.login-form label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+}
+.login-form label .input {
+  margin-top: 6px;
+}
+.login-form-compact .account-card-title h2 {
+  font-size: 19px;
+}
+.login-form-compact .account-card-title svg {
+  width: 19px;
+  height: 19px;
+}
+.login-register {
+  text-align: center;
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.login-register a {
+  color: var(--pink-dark);
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.optional-label { color: var(--muted); font-size: 12px; font-weight: 400; }
+.login-demo-hint {
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 0;
+}
+.login-form .form-error,
+.account-card .form-error {
+  margin: 0;
+  font-size: 12px;
+}
+.account-wrap-narrow {
+  max-width: 650px;
+}
+.account-wrap-narrow .account-heading {
+  margin-bottom: 24px;
+}
+.account-wrap-narrow .account-card {
+  max-width: 520px;
+  margin-inline: auto;
+}

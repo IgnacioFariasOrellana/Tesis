@@ -1,0 +1,26 @@
+.benefit-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  border: 1px solid var(--stroke);
+  border-radius: 20px;
+  padding: 23px;
+  background: #fff5f8;
+}
+.benefit-row > div {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.benefit-row svg {
+  color: var(--pink);
+  min-width: 27px;
+}
+.benefit-row strong,
+.benefit-row small {
+  display: block;
+}
+.benefit-row small {
+  color: var(--muted);
+  line-height: 1.6;
+}

@@ -1,0 +1,96 @@
+/* Tienda: navegación y pie */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 77px;
+  background: #fffdfdf5;
+  border-bottom: 1px solid #ffe3eb;
+  backdrop-filter: blur(12px);
+}
+.nav-wrap {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 180px;
+}
+.brand-logo {
+  object-fit: contain;
+}
+.brand strong {
+  color: var(--pink-dark);
+  font-family: Georgia, serif;
+  font-size: 22px;
+  display: block;
+  line-height: 1.1;
+}
+.brand small {
+  color: var(--orange);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+.nav-links a {
+  font-size: 13px;
+  color: #624e54;
+  border-bottom: 2px solid transparent;
+  padding: 9px 0;
+}
+.nav-links a:hover,
+.nav-links a.active {
+  color: var(--pink-dark);
+  border-color: var(--pink);
+}
+.nav-actions {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+}
+.cart-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 17px;
+  border-radius: 100px;
+  color: var(--pink-dark);
+  background: #fff3f8;
+  border: 1px solid #ffcfdf;
+  font-weight: 700;
+  white-space: nowrap;
+  font-size: 12px;
+}
+.user-link,
+.icon-button {
+  border: none;
+  background: #fff0f6;
+  color: var(--pink);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.icon-button:hover,
+.user-link:hover {
+  background: #ffe1eb;
+}
+.mobile-menu {
+  display: none;
+}

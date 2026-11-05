@@ -1,5 +1,5 @@
 import { getProducts } from "@/lib/product-api";
-import { ProductAdminClient } from "@/components/ProductAdminClient";
+import { ProductAdminClient } from "@/components/admin/ProductAdminClient";
 import { getAuthorizedData } from "@/lib/auth-api";
 import type { InventoryItem } from "@/lib/db-types";
 

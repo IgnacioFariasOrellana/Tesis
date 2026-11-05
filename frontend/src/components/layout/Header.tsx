@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ShoppingBag, Menu, X, UserRound } from "lucide-react";
 import { useCart } from "@/context/cart-context";
 import { useEffect, useRef, useState } from "react";
-import { LoginForm } from "@/components/LoginForm";
+import { LoginForm } from "@/components/auth/LoginForm";
 import { createClient } from "@/lib/supabase/client";
 
 const links = [

@@ -1,0 +1,212 @@
+/* Catálogo */
+.catalog-hero {
+  padding: 48px 0 35px;
+  background:
+    radial-gradient(ellipse at 83% 7%, #ffe4f4, transparent 43%),
+    radial-gradient(ellipse at 0 95%, #fff1cf, transparent 40%), #fff9fa;
+}
+.catalog-hero .container,
+.catalog-results,
+.catalog-header .container {
+  width: min(1640px, calc(100% - 64px));
+}
+.catalog-hero-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 30px;
+  margin-bottom: 0;
+}
+.catalog-hero h1 {
+  font-size: clamp(34px, 4.4vw, 53px);
+  line-height: 1.05;
+}
+.catalog-hero h1 em {
+  font-style: normal;
+}
+.catalog-hero p {
+  max-width: 610px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.delivery-card {
+  background: white;
+  border: 1px solid var(--stroke);
+  border-radius: 17px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  flex-shrink: 0;
+}
+.delivery-card > svg {
+  color: var(--orange);
+}
+.delivery-card strong,
+.delivery-card small {
+  display: block;
+}
+.delivery-card small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.filter-panel {
+  background: #fffaf8f5;
+  border: 1px solid #f7e4e3;
+  border-radius: 22px;
+  padding: 18px 24px;
+  box-shadow: var(--shadow);
+}
+.filter-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 10px 0;
+  flex-wrap: wrap;
+}
+.filter-row + .filter-row {
+  border-top: 1px solid #faeced;
+}
+.filter-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #9b7778;
+  min-width: 85px;
+}
+.chip-group {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.chip {
+  border: 1px solid #f4e3e7;
+  background: #fff9fc;
+  color: #77565f;
+  padding: 7px 12px;
+  border-radius: 99px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.chip:hover {
+  border-color: #f0b2c6;
+}
+.chip.selected,
+.chip.selected:hover {
+  background: var(--pink);
+  color: white;
+  border-color: var(--pink);
+  box-shadow: 0 3px 8px #d81b6026;
+}
+.sort-field {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 11px;
+  margin-left: auto;
+}
+.sort-field select {
+  border: 1px solid var(--stroke);
+  background: #fff;
+  border-radius: 30px;
+  padding: 7px 10px;
+}
+.today-filter {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  margin-left: auto;
+  color: var(--pink-dark);
+}
+.catalog-results {
+  padding: 32px 0 35px;
+}
+.catalog-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  align-items: start;
+  gap: 28px;
+}
+.catalog-sidebar,
+.catalog-main {
+  min-width: 0;
+}
+.catalog-sidebar .filter-panel {
+  padding: 22px;
+}
+.filter-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+.filter-panel-heading h2 {
+  font-size: 18px;
+  margin: 0;
+}
+.catalog-sidebar .filter-row {
+  display: block;
+  padding: 16px 0;
+}
+.catalog-sidebar .filter-label {
+  display: block;
+  min-width: 0;
+  margin-bottom: 11px;
+}
+.catalog-sidebar .chip {
+  white-space: normal;
+  text-align: left;
+}
+.catalog-sidebar .today-filter {
+  margin: 17px 0 0;
+}
+.catalog-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.catalog-toolbar p {
+  margin: 0;
+}
+.catalog-toolbar .sort-field {
+  margin-left: 0;
+  white-space: nowrap;
+}
+.catalog-main .products-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.catalog-main .product-card {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-radius: 20px;
+}
+.catalog-main .product-image {
+  aspect-ratio: 1.45;
+}
+.catalog-main .product-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.catalog-main .product-title {
+  font-size: 18px;
+  min-height: 44px;
+}
+.catalog-main .product-info p {
+  font-size: 11px;
+  min-height: 48px;
+}
+.catalog-main .product-bottom .btn {
+  padding: 8px 10px;
+  font-size: 10px;
+}
+.catalog-main .product-bottom {
+  margin-top: auto;
+}
