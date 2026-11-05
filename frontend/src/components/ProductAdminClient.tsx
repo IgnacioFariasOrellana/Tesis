@@ -8,7 +8,7 @@ import { currency } from "@/lib/format";
 import type { Product } from "@/lib/types";
 import type { InventoryItem } from "@/lib/db-types";
 import { adminRequest } from "@/lib/admin-api";
-import {
+import { 
   emptySupply,
   ProductSuppliesEditor,
   supplyPayload,

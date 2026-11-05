@@ -4,7 +4,17 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { BarChart3, Boxes, Truck, Gift, Package, Wallet, Users, Store } from "lucide-react";
+import {
+  BarChart3,
+  Boxes,
+  ChevronRight,
+  Truck,
+  Gift,
+  Package,
+  Wallet,
+  Users,
+  Store,
+} from "lucide-react";
 const adminLinks = [
   { href: "/admin", label: "Panel general", Icon: BarChart3 },
   { href: "/admin/inventario", label: "Inventario", Icon: Boxes },
@@ -14,7 +24,13 @@ const adminLinks = [
   { href: "/admin/usuarios", label: "Usuarios", Icon: Users },
 ];
 const deliveryLinks = [{ href: "/repartidor", label: "Mi ruta", Icon: Truck }];
-export function DashboardShell({ children, role }: { children: React.ReactNode; role: "admin" | "repartidor" }) {
+export function DashboardShell({
+  children,
+  role,
+}: {
+  children: React.ReactNode;
+  role: "admin" | "repartidor";
+}) {
   const path = usePathname();
   const router = useRouter();
   const links = role === "admin" ? adminLinks : deliveryLinks;
@@ -24,16 +40,16 @@ export function DashboardShell({ children, role }: { children: React.ReactNode; 
     router.refresh();
   }
   return (
-    <div className="dashboard-layout">
+    <div className={`dashboard-layout ${role === "admin" ? "admin-dashboard" : ""}`}>
       <aside className="dashboard-sidebar">
         <Link href="/" className="dashboard-brand">
           <Image src="/images/logo-allicam.png" width={59} height={44} alt="" />
           <span>
             <strong>Allicam</strong>
-            <small>TALLER & OPERACIONES</small>
+            <small>Detalles con amor</small> 
           </span>
         </Link>
-        <div className="sidebar-caption">{role === "admin" ? "SEDE CENTRAL BOUTIQUE" : "PANEL DE REPARTO"}</div>
+        
         <nav className="sidebar-nav" aria-label="Módulos de administración">
           {links.map(({ href, label, Icon }) => (
             <Link href={href} key={href} className={path === href ? "current" : ""}>
@@ -42,18 +58,25 @@ export function DashboardShell({ children, role }: { children: React.ReactNode; 
             </Link>
           ))}
         </nav>
-        <Link href="/cuenta" className="sidebar-bottom">Mi cuenta</Link>
-        <button type="button" className="sidebar-bottom" onClick={signOut}>Cerrar sesión</button>
+        <Link href="/cuenta" className="sidebar-bottom">
+          Mi cuenta
+        </Link>
+        <button type="button" className="sidebar-bottom" onClick={signOut}>
+          Cerrar sesión
+        </button>
         <Link href="/" className="sidebar-bottom">
           <Store size={17} /> Ver Tienda Online ↗
-        </Link>
+        </Link> 
       </aside>
       <div className="dashboard-main">
         <div className="dashboard-top">
-          <span className="soft-pill">{role === "admin" ? "ADMINISTRACIÓN" : "REPARTO"}</span>
-          <span>Panel de {role === "admin" ? "administración" : "repartidores"}</span>
+          <div className="admin-breadcrumb">
+            <span>{role === "admin" ? "Mi taller" : "Reparto"}</span>
+            <ChevronRight size={14} />
+            <strong>{links.find((link) => link.href === path)?.label || "Panel"}</strong>
+          </div>
           <Link href="/cuenta" className="top-user">
-            <Image src="/images/logo-allicam.png" alt="" width={28} height={28} /> Taller Allicam
+            <Image src="/images/logo-allicam.png" alt="" width={28} height={28} /> Mi cuenta
           </Link>
         </div>
         <div className="dashboard-content">{children}</div>

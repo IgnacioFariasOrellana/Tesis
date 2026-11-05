@@ -104,7 +104,6 @@ export default function CheckoutPage() {
       <div className="checkout-grid">
         <div>
           <div className="checkout-intro">
-            <span className="eyebrow">✿ TALLER ARTESANAL ALLICAM</span>
             <h1 className="serif-title">Confirmación del pedido</h1>
             <p>
               Completa los datos de entrega para registrar tu pedido en el taller. El pago se coordina después; aquí no se cobran tarjetas.
@@ -185,7 +184,7 @@ export default function CheckoutPage() {
                 </label>
               </div>
               <div className="pale-note">
-                <Truck size={17} /> Entregas matutinas según disponibilidad del taller.
+                <Truck size={17} /> Entregas matutinas según disponibilidad.
               </div>
             </section>
             <section className="form-section">
@@ -215,7 +214,7 @@ export default function CheckoutPage() {
                   Tu pedido quedará registrado como pendiente. No se solicitan tarjetas ni se cobra dinero en esta pantalla.
                 </p>
               </div>
-              <label className="consent">
+              {/*<label className="consent">
                 <input
                   type="checkbox"
                   checked={accept}
@@ -224,13 +223,13 @@ export default function CheckoutPage() {
                 <span>
                   Confirmo que quiero registrar este pedido en el taller.
                 </span>
-              </label>
+              </label>*/} 
             </section>
-            {error && (
+            {/*{error && (
               <p className="form-error" role="alert">
                 {error}
               </p>
-            )}
+            )}*/}  
             <button type="submit" className="btn btn-primary btn-full" disabled={busy}>
               <ShoppingBag size={18} /> {busy ? "Registrando..." : "Registrar pedido"}
             </button>
