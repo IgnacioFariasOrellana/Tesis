@@ -26,27 +26,25 @@ export default function CartPage() {
     deliveryInstructions,
     setDeliveryInstructions,
   } = useCart();
-  const [coupon, setCoupon] = useState("");
-  const [couponNotice, setCouponNotice] = useState(false);
   const shipping = count ? 6000 : 0;
   return (
     <div className="container cart-page">
       <div className="section-between">
         <div className="breadcrumb">
           <Link href="/catalogo">
-            <ArrowLeft size={15} /> Catálogo de experiencias
+            <ArrowLeft size={15} /> Catálogo
           </Link>{" "}
           / <strong>Bolsa de Obsequios</strong>
         </div>
-        <span className="soft-pill">● Reserva en Taller por 24 horas*</span>
+        <span className="soft-pill">Reserva con 24 horas de anticipación</span>
       </div>
       <div className="page-intro">
         <h1 className="serif-title">
-          Tu Carrito de Regalos y Sorpresas <em>({count} experiencias seleccionadas)</em>
+          Tu Carrito de Regalos y Sorpresas
         </h1>
         <p>
-          Cada presente se organiza individualmente en nuestro taller con empaque ecológico y
-          caligrafía personalizada.
+          Cada presente se organiza individualmente para garantizar 
+          que llegue en perfectas condiciones y con la dedicación que merece.
         </p>
       </div>
       {items.length === 0 ? (
@@ -127,7 +125,7 @@ export default function CartPage() {
             </div>
             <div className="cart-extras">
               <label htmlFor="cart-instructions">
-                <strong>✉ Instrucciones especiales para el conserje o timbre</strong>
+                <strong>Instrucciones especiales para el conserje o timbre</strong>
                 <p>¿Requiere entrega silenciosa o llamada telefónica antes?</p>
               </label>
               <textarea
@@ -138,29 +136,6 @@ export default function CartPage() {
                 placeholder="Ej: Tocar timbre departamento 402, no llamar al interfono..."
                 rows={2}
               />
-              <div className="coupon-row">
-                <div className="coupon-input">
-                  <label htmlFor="coupon">
-                    <strong>¿Tienes un cupón de obsequio o tarjeta de taller?</strong>
-                  </label>
-                  <input
-                    className="input"
-                    id="coupon"
-                    value={coupon}
-                    onChange={(e) => {
-                      setCoupon(e.target.value);
-                      setCouponNotice(false);
-                    }}
-                    placeholder="Código de cupón"
-                  />
-                </div>
-                <button className="btn btn-soft" onClick={() => setCouponNotice(true)}>
-                  Aplicar
-                </button>
-              </div>
-              {couponNotice && (
-                <p className="inline-warning">No hay cupones habilitados en esta demostración.</p>
-              )}
             </div>
           </div>
           <aside>
@@ -185,15 +160,15 @@ export default function CartPage() {
               <div className="secure-notice">
                 <ShieldCheck />
                 <div>
-                  <strong>Compra de demostración</strong>
+                  <strong>Pedido sujeto a confirmación</strong>
                   <p>
-                    Aún no se procesa autenticación bancaria ni pagos reales. Los pedidos se guardan
-                    únicamente en este navegador.
+                    El carrito se conserva en este navegador. Al confirmar, el pedido se registra
+                    en tu cuenta. El pago se coordina con el taller.
                   </p>
                 </div>
               </div>
               <Link href="/checkout" className="btn btn-primary btn-full">
-                Continuar compra <ArrowRight size={17} />
+                Continuar pedido <ArrowRight size={17} />
               </Link>
               <Link href="/catalogo" className="back-link">
                 Seguir explorando el catálogo

@@ -28,7 +28,12 @@ export default function RegisterPage() {
       email: String(data.get("email")),
       password,
       options: {
-        data: { nombre: String(data.get("name")), telefono: String(data.get("phone")) },
+        data: {
+          nombres: String(data.get("nombres")).trim(),
+          apellido_paterno: String(data.get("apellido_paterno")).trim(),
+          apellido_materno: String(data.get("apellido_materno")).trim(),
+          telefono: String(data.get("phone")).trim(),
+        },
         emailRedirectTo: `${window.location.origin}/auth/confirm`,
       },
     });
@@ -69,13 +74,33 @@ export default function RegisterPage() {
           </div>
           <div className="form-grid">
             <label>
-              Nombre y apellido
+              Nombres
               <input
                 className="input"
-                name="name"
+                name="nombres"
                 required
-                autoComplete="name"
-                placeholder="Ej: Camila Morales"
+                autoComplete="given-name"
+                placeholder="Ej: Camila Fernanda"
+              />
+            </label>
+            <label>
+              Apellido paterno
+              <input
+                className="input"
+                name="apellido_paterno"
+                required
+                autoComplete="family-name"
+                placeholder="Ej: Morales"
+              />
+            </label>
+          </div>
+          <div className="form-grid">
+            <label>
+              Apellido materno <span className="optional-label">(opcional)</span>
+              <input
+                className="input"
+                name="apellido_materno"
+                placeholder="Ej: Rojas"
               />
             </label>
             <label>

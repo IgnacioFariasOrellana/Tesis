@@ -6,8 +6,10 @@ from uuid import uuid4
 
 from app.integrations.supabase import SupabaseClient, SupabaseError
 from app.repositories.categoria import ensure_category
-from app.repositories.producto import insert_product, slug_exists
+from app.repositories.producto import insert_product, public_products, slug_exists
+from app.repositories.producto_insumo import for_products
 from app.schemas.producto import NewProduct
+from app.schemas.producto_insumo import ProductSupply
 from app.services.storage import delete_photo, upload_photo
 
 MAX_IMAGE_BYTES = 5 * 1024 * 1024
@@ -60,7 +62,6 @@ def create_product(data: NewProduct, photo: bytes) -> dict[str, str]:
     if price <= 0 or price > 2147483647:
         raise ProductError(400, "Ingresa un precio válido en pesos")
     occasions = _items(data.occasions, 20, 50)
-    features = _items(data.features, 30, 120)
     if not photo or len(photo) > MAX_IMAGE_BYTES:
         raise ProductError(400, "Selecciona una foto de hasta 5 MB")
     mime, extension = _photo_type(photo)
@@ -91,9 +92,8 @@ def create_product(data: NewProduct, photo: bytes) -> dict[str, str]:
             "activo": True,
             "etiqueta": badge,
             "ocasiones": occasions,
-            "caracteristicas": features,
             "disponible_hoy": data.available_today,
-        })
+        }, [item.model_dump(mode="json") for item in data.supplies])
     except SupabaseError as exc:
         try:
             delete_photo(client, photo_name)
@@ -101,5 +101,31 @@ def create_product(data: NewProduct, photo: bytes) -> dict[str, str]:
             pass
         if exc.status == 409:
             raise ProductError(409, "Ya existe un producto con ese nombre") from exc
+        if exc.status == 404:
+            raise ProductError(503, "Falta aplicar la migración 004 de insumos") from exc
+        if exc.status == 400:
+            raise ProductError(422, "Revisa los insumos y sus cantidades; deben estar activos") from exc
         raise ProductError(502, "No se pudo guardar el producto") from exc
     return {"slug": slug, "image": image_url}
+
+
+def catalog_products(slug: str | None = None):
+    # Primero se aplica RLS con la clave pública. Solo se completa el contenido
+    # de los productos publicados; nunca se incluyen existencias del inventario.
+    products = public_products(SupabaseClient("SUPABASE_PUBLISHABLE_KEY"), slug)
+    if not products:
+        return products
+    rows = for_products(SupabaseClient("SUPABASE_SECRET_KEY"), [int(product.id) for product in products])
+    by_id = {int(product.id): product for product in products}
+    for row in rows:
+        supply = row["insumo"]
+        by_id[row["id_producto"]].supplies.append(ProductSupply(
+            insumoId=row["id_insumo"], name=supply["nombre"] or "Insumo",
+            unit=supply["unidad_medida"] or "unidad", quantity=row["cantidad_requerida"],
+        ))
+    for product in products:
+        if product.supplies:
+            product.features = [
+                f"{item.name} · {item.quantity:g} {item.unit}" for item in product.supplies
+            ]
+    return products

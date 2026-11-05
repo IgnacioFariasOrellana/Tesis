@@ -2,7 +2,9 @@
 
 from dataclasses import dataclass
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+from app.schemas.producto_insumo import ProductSupply, SupplySelection
 
 
 class Product(BaseModel):
@@ -17,6 +19,7 @@ class Product(BaseModel):
     badge: str
     availableToday: bool
     features: list[str]
+    supplies: list[ProductSupply] = Field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -27,5 +30,5 @@ class NewProduct:
     price: str
     badge: str
     occasions: str
-    features: str
+    supplies: list[SupplySelection]
     available_today: bool

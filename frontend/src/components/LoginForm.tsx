@@ -6,7 +6,15 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, LogIn } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
-export function LoginForm() {
+export function LoginForm({
+  compact = false,
+  onRegisterClick,
+  onSuccess,
+}: {
+  compact?: boolean;
+  onRegisterClick?: () => void;
+  onSuccess?: () => void;
+}) {
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
   const router = useRouter();
@@ -37,12 +45,13 @@ export function LoginForm() {
       setBusy(false);
       return;
     }
+    onSuccess?.();
     router.replace(profile.rol === "admin" ? "/admin" : profile.rol === "repartidor" ? "/repartidor" : "/cuenta");
     router.refresh();
   }
   return (
     <form
-      className="account-card login-form"
+      className={compact ? "login-form login-form-compact" : "account-card login-form"}
       onSubmit={onSubmit}
     >
       <div className="account-card-title">
@@ -85,7 +94,7 @@ export function LoginForm() {
       )}
       <p className="login-register">
         ¿Aún no tienes perfil?{" "}
-        <Link href="/registro">
+        <Link href="/registro" onClick={onRegisterClick}>
           Crear perfil
         </Link>
       </p>

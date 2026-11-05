@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ShoppingBag, Menu, X, UserRound } from "lucide-react";
 import { useCart } from "@/context/cart-context";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { LoginForm } from "@/components/LoginForm";
+import { createClient } from "@/lib/supabase/client";
 
 const links = [
   { href: "/", text: "Inicio" },
@@ -16,7 +18,44 @@ const links = [
 export function Header() {
   const { count } = useCart();
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  const loginRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function onPointerDown(event: PointerEvent) {
+      if (!loginRef.current?.contains(event.target as Node)) setLoginOpen(false);
+    }
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setLoginOpen(false);
+    }
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, []);
+
+  async function toggleLogin() {
+    const nextOpen = !loginOpen;
+    setLoginOpen(nextOpen);
+    setOpen(false);
+    if (nextOpen) {
+      setSignedIn(null);
+      const { data } = await createClient().auth.getUser();
+      setSignedIn(Boolean(data.user));
+    }
+  }
+
+  async function signOut() {
+    await createClient().auth.signOut();
+    setSignedIn(false);
+    setLoginOpen(false);
+    router.refresh();
+  }
 
   return (
     <header className={`site-header ${pathname === "/catalogo" ? "catalog-header" : ""}`}>
@@ -26,6 +65,7 @@ export function Header() {
           className="brand"
           onClick={() => {
             setOpen(false);
+            setLoginOpen(false);
           }}
         >
           <Image
@@ -58,9 +98,33 @@ export function Header() {
             <span className="cart-label">Carrito</span>
             <span>({count})</span>
           </Link>
-          <Link href="/cuenta" className="user-link" aria-label="Mi cuenta" onClick={() => setOpen(false)}>
-            <UserRound size={19} />
-          </Link>
+          <div className="login-menu" ref={loginRef}>
+            <button
+              type="button"
+              className="user-link"
+              aria-label="Abrir menú de usuario"
+              aria-expanded={loginOpen}
+              aria-controls="login-dropdown"
+              onClick={toggleLogin}
+            >
+              <UserRound size={19} />
+            </button>
+            {loginOpen && (
+              <div className="login-dropdown" id="login-dropdown">
+                {signedIn === null ? (
+                  <p role="status">Cargando cuenta...</p>
+                ) : signedIn ? (
+                  <div className="login-form login-form-compact">
+                    <strong>Tu cuenta</strong>
+                    <Link className="btn btn-outline btn-full" href="/cuenta" onClick={() => setLoginOpen(false)}>Ver perfil</Link>
+                    <button className="btn btn-primary btn-full" type="button" onClick={signOut}>Cerrar sesión</button>
+                  </div>
+                ) : (
+                  <LoginForm compact onRegisterClick={() => setLoginOpen(false)} onSuccess={() => setLoginOpen(false)} />
+                )}
+              </div>
+            )}
+          </div>
           <button
             className="mobile-menu icon-button"
             type="button"
@@ -68,6 +132,7 @@ export function Header() {
             aria-expanded={open}
             onClick={() => {
               setOpen(!open);
+              setLoginOpen(false);
             }}
           >
             {open ? <X /> : <Menu />}

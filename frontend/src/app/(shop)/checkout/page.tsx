@@ -1,5 +1,5 @@
 "use client";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,8 +14,8 @@ import {
   UserRound,
 } from "lucide-react";
 import { useCart } from "@/context/cart-context";
-import { currency } from "@/lib/format";
-import { saveOrder } from "@/lib/orders";
+import { currency, todayInChile } from "@/lib/format";
+import { createClient } from "@/lib/supabase/client";
 export default function CheckoutPage() {
   const { items, subtotal, clearCart, deliveryInstructions } = useCart();
   const router = useRouter();
@@ -26,8 +26,19 @@ export default function CheckoutPage() {
   const [notes, setNotes] = useState("");
   const [accept, setAccept] = useState(false);
   const [error, setError] = useState("");
-  function submit(e: FormEvent<HTMLFormElement>) {
+  const [busy, setBusy] = useState(false);
+  const [deliveryDate, setDeliveryDate] = useState("");
+  const [deliverySlot, setDeliverySlot] = useState("07:30 - 08:30");
+  const requestId = useRef<string | null>(null);
+  useEffect(() => {
+    if (items.length && !deliveryDate && items[0].deliveryDate) {
+      setDeliveryDate(items[0].deliveryDate);
+      setDeliverySlot(items[0].deliverySlot);
+    }
+  }, [items, deliveryDate]);
+  async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (busy) return;
     setError("");
     if (!items.length) {
       setError("Primero agrega un regalo al carrito.");
@@ -42,26 +53,47 @@ export default function CheckoutPage() {
       return;
     }
     if (!accept) {
-      setError("Debes aceptar las condiciones de la demostración.");
+      setError("Confirma que quieres registrar la solicitud de pedido.");
       return;
     }
+    if (!deliveryDate) {
+      setError("Selecciona una fecha de entrega.");
+      return;
+    }
+    if (deliveryDate < todayInChile()) {
+      setError("Selecciona una fecha de entrega válida.");
+      return;
+    }
+    setBusy(true);
     try {
-      saveOrder({
-        id: `AL-${Date.now().toString().slice(-6)}`,
-        createdAt: new Date().toISOString(),
-        recipient: recipient.trim(),
-        address: `${address.trim()}, ${comuna.trim()}`,
-        items,
-        total: subtotal + 6000,
-        status: "Recibido",
-        instructions: [deliveryInstructions, notes].filter(Boolean).join(" | "),
+      const { data: { session } } = await createClient().auth.getSession();
+      if (!session) throw new Error("Inicia sesión en Mi cuenta antes de confirmar el pedido.");
+      requestId.current ||= crypto.randomUUID();
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/orders`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({
+          requestId: requestId.current,
+          recipient: recipient.trim(), phone: phone.trim(), address: address.trim(), comuna: comuna.trim(),
+          instructions: [deliveryInstructions, notes].filter(Boolean).join(" | "),
+          deliveryDate, deliverySlot,
+          items: items.map((item) => ({
+            productId: Number(item.product.id),
+            quantity: item.quantity,
+            expectedUnitPrice: item.product.price + item.extraPrice,
+            balloon: item.balloon ?? [4000, 10000].includes(item.extraPrice),
+            treat: item.treat ?? [6000, 10000].includes(item.extraPrice),
+            dedication: item.dedication,
+          })),
+        }),
       });
+      const result = await response.json() as { detail?: string };
+      if (!response.ok) throw new Error(result.detail || "No se pudo registrar el pedido.");
       clearCart();
       router.push("/mis-pedidos?creado=1");
-    } catch {
-      setError(
-        "No se pudo guardar el pedido de demostración. Revisa el almacenamiento de tu navegador.",
-      );
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "No se pudo registrar el pedido.");
+      setBusy(false);
     }
   }
   return (
@@ -72,11 +104,9 @@ export default function CheckoutPage() {
       <div className="checkout-grid">
         <div>
           <div className="checkout-intro">
-            <span className="eyebrow">✿ TALLER ARTESANAL ALLICAM</span>
             <h1 className="serif-title">Confirmación del pedido</h1>
             <p>
-              Completa los datos de entrega. Esta pantalla registra una{" "}
-              <strong>simulación local</strong>; no envía pedidos al taller ni cobra dinero.
+              Completa los datos de entrega para registrar tu pedido en el taller. El pago se coordina después; aquí no se cobran tarjetas.
             </p>
           </div>
           <form onSubmit={submit} className="checkout-form">
@@ -139,12 +169,22 @@ export default function CheckoutPage() {
               <h2>
                 <span>3</span> <CalendarCheck2 size={19} /> Fecha y franja de entrega
               </h2>
-              <p>
-                Se conservarán las fechas y franjas que elegiste para cada artículo. Se validarán al
-                implementar el módulo de entregas.
-              </p>
+              <p>Elige una fecha y una franja para todo el pedido. La disponibilidad se confirma en el taller.</p>
+              <div className="form-grid">
+                <label>Fecha de entrega
+                  <input className="input" type="date" required min={todayInChile()}
+                    value={deliveryDate} onChange={(event) => setDeliveryDate(event.target.value)} />
+                </label>
+                <label>Franja horaria
+                  <select className="input" value={deliverySlot} onChange={(event) => setDeliverySlot(event.target.value)}>
+                    <option value="07:30 - 08:30">07:30 - 08:30</option>
+                    <option value="08:30 - 10:00">08:30 - 10:00</option>
+                    <option value="10:00 - 11:30">10:00 - 11:30</option>
+                  </select>
+                </label>
+              </div>
               <div className="pale-note">
-                <Truck size={17} /> Entregas matutinas según disponibilidad del taller.
+                <Truck size={17} /> Entregas matutinas según disponibilidad.
               </div>
             </section>
             <section className="form-section">
@@ -169,31 +209,29 @@ export default function CheckoutPage() {
               <div className="pale-note">
                 <ShieldCheck size={19} />
                 <p>
-                  <strong>Modo demostración</strong>
+                  <strong>Pago pendiente</strong>
                   <br />
-                  No se solicitan datos de tarjetas ni se efectúan transferencias bancarias. La
-                  integración de pagos se realizará posteriormente.
+                  Tu pedido quedará registrado como pendiente. No se solicitan tarjetas ni se cobra dinero en esta pantalla.
                 </p>
               </div>
-              <label className="consent">
+              {/*<label className="consent">
                 <input
                   type="checkbox"
                   checked={accept}
                   onChange={(e) => setAccept(e.target.checked)}
                 />
                 <span>
-                  Acepto registrar un pedido ficticio en el almacenamiento local de este navegador
-                  para probar el flujo.
+                  Confirmo que quiero registrar este pedido en el taller.
                 </span>
-              </label>
+              </label>*/} 
             </section>
-            {error && (
+            {/*{error && (
               <p className="form-error" role="alert">
                 {error}
               </p>
-            )}
-            <button type="submit" className="btn btn-primary btn-full">
-              <ShoppingBag size={18} /> Confirmar pedido de demostración
+            )}*/}  
+            <button type="submit" className="btn btn-primary btn-full" disabled={busy}>
+              <ShoppingBag size={18} /> {busy ? "Registrando..." : "Registrar pedido"}
             </button>
           </form>
         </div>
@@ -219,16 +257,16 @@ export default function CheckoutPage() {
               <strong>{currency(subtotal)}</strong>
             </div>
             <div className="summary-row">
-              <span>Envío (demo)</span>
+              <span>Envío</span>
               <strong>{currency(items.length ? 6000 : 0)}</strong>
             </div>
             <div className="summary-total">
-              <span>Total simulado</span>
+              <span>Total estimado</span>
               <strong>{currency(subtotal + (items.length ? 6000 : 0))}</strong>
             </div>
             <div className="secure-notice">
               <ShieldCheck />
-              <span>Sin pagos, envíos ni notificaciones reales.</span>
+              <span>Pedido registrado en la base de datos. Pago pendiente de coordinación.</span>
             </div>
           </div>
         </aside>

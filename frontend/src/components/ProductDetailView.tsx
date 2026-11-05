@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { Product } from "@/lib/types";
 import { useCart } from "@/context/cart-context";
-import { currency } from "@/lib/format";
+import { currency, todayInChile } from "@/lib/format";
 import { ProductCard } from "./ProductCard";
 export function ProductDetailView({ product, relatedProducts }: { product: Product; relatedProducts: Product[] }) {
   const { addItem } = useCart();
@@ -91,7 +91,7 @@ export function ProductDetailView({ product, relatedProducts }: { product: Produ
               className="input"
               type="date"
               id="delivery-date"
-              min={new Date().toLocaleDateString("en-CA")}
+              min={todayInChile()}
               value={date}
               onChange={(e) => setDate(e.target.value)}
             />
@@ -171,14 +171,14 @@ export function ProductDetailView({ product, relatedProducts }: { product: Produ
             type="button"
             className="btn btn-primary btn-full"
             onClick={() => {
-              addItem(product, { dedication, deliveryDate: date, deliverySlot: slot, extraPrice });
+              addItem(product, { dedication, deliveryDate: date, deliverySlot: slot, extraPrice, balloon, treat });
               router.push("/carrito");
             }}
           >
             <ShoppingBag size={18} /> Agregar al carrito de regalos <ArrowRight size={17} />
           </button>
           <p className="center-caption">
-            <ShieldCheck size={14} /> Pedido de demostración • Sin cobros reales
+            <ShieldCheck size={14} /> Pedido sujeto a confirmación • Sin cobro en línea
           </p>
         </div>
       </div>

@@ -7,6 +7,8 @@ type AddOptions = {
   deliveryDate?: string;
   deliverySlot?: string;
   extraPrice?: number;
+  balloon?: boolean;
+  treat?: boolean;
 };
 type CartContextType = {
   items: CartItem[];
@@ -67,6 +69,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
             deliveryDate: options.deliveryDate || "",
             deliverySlot: options.deliverySlot || "07:30 - 08:30",
             extraPrice: options.extraPrice || 0,
+            balloon: options.balloon || false,
+            treat: options.treat || false,
           },
         ]),
       updateQuantity: (id, qty) =>
