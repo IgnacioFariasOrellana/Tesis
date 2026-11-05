@@ -1,4 +1,4 @@
-import { UserAdminClient } from "@/components/UserAdminClient";
+import { UserAdminClient } from "@/components/admin/UserAdminClient";
 import { requireRole } from "@/lib/supabase/profile";
 
 export default async function UsersPage() {

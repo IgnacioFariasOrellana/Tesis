@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { LoginForm } from "@/components/LoginForm";
-import { AccountProfile } from "@/components/AccountProfile";
+import { LoginForm } from "@/components/auth/LoginForm";
+import { AccountProfile } from "@/components/auth/AccountProfile";
 import { getProfile } from "@/lib/supabase/profile";
 
 export default async function AccountPage() {

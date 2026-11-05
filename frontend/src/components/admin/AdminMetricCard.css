@@ -1,0 +1,111 @@
+.admin-metrics {
+  display: grid;
+  gap: 17px;
+  margin-bottom: 24px;
+}
+.admin-metrics-four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.admin-metrics-two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 850px;
+}
+.admin-metric {
+  --metric-color: #bd376a;
+  --metric-soft: #f9e8ef;
+  --metric-track: #f0e1e7;
+  padding: 20px;
+  border: 1px solid var(--admin-border);
+  border-radius: 17px;
+  background: #fff;
+  min-width: 0;
+}
+.admin-tone-sage {
+  --metric-color: #377e6d;
+  --metric-soft: #e8f3ee;
+  --metric-track: #e1ede7;
+}
+.admin-tone-amber {
+  --metric-color: #b47b26;
+  --metric-soft: #faf0dd;
+  --metric-track: #f1e9d8;
+}
+.admin-tone-plum {
+  --metric-color: #8063a2;
+  --metric-soft: #f0eaf6;
+  --metric-track: #eae4f0;
+}
+.admin-metric-heading {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.admin-metric-heading h2 {
+  margin: 0;
+  color: #65515d;
+  font-size: 11px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+.admin-metric-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  color: var(--metric-color);
+  background: var(--metric-soft);
+}
+.admin-metric-body {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.admin-metric-body p {
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 11px;
+  line-height: 1.7;
+  max-width: 210px;
+}
+.admin-metrics-four .admin-metric-body {
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+}
+.admin-ring {
+  --ring-progress: 0deg;
+  width: 116px;
+  height: 116px;
+  position: relative;
+  flex: 0 0 116px;
+  border-radius: 50%;
+  background: conic-gradient(var(--metric-color) var(--ring-progress), var(--metric-track) 0);
+}
+.admin-ring::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border-radius: 50%;
+  background: #fff;
+}
+.admin-ring-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+}
+.admin-ring-label strong {
+  font-variant-numeric: tabular-nums;
+  font-size: 31px;
+  letter-spacing: -0.055em;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #382c34;
+}
+.admin-ring-label strong.admin-ring-large-count {
+  font-size: 18px;
+}

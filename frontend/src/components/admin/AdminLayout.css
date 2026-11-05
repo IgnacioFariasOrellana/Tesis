@@ -1,0 +1,63 @@
+.admin-dashboard {
+  --admin-border: #eee4e9;
+  --admin-muted: #877680;
+  background: #fcfafb;
+  color: #382d34;
+}
+.admin-dashboard .dashboard-sidebar {
+  background: #fff;
+  border-color: var(--admin-border);
+}
+.admin-dashboard .dashboard-top {
+  background: #fff;
+  border-color: var(--admin-border);
+}
+.admin-dashboard .dashboard-content {
+  max-width: 1510px;
+  padding: 30px 34px 55px;
+}
+.admin-dashboard .dashboard-welcome {
+  margin-bottom: 24px;
+}
+.admin-dashboard .dashboard-welcome h1 {
+  font-family: inherit;
+  font-size: clamp(28px, 3vw, 39px);
+  letter-spacing: -0.045em;
+}
+.admin-dashboard .dashboard-welcome p {
+  color: var(--admin-muted);
+}
+.admin-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #9b7889;
+}
+.admin-breadcrumb strong {
+  color: #6c5360;
+  font-weight: 600;
+}
+.admin-dashboard .dashboard-card {
+  border: 1px solid var(--admin-border);
+  border-radius: 17px;
+  padding: 24px;
+  box-shadow: 0 3px 16px #482c3d08;
+}
+.admin-dashboard .dashboard-card.no-padding {
+  padding: 0;
+}
+.admin-dashboard .dashboard-card h2 {
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  color: #3e3038;
+  margin: 0;
+}
+.admin-dashboard .dashboard-card p {
+  color: var(--admin-muted);
+}
+.admin-dashboard :is(a, button, input, select, textarea):focus-visible {
+  outline: 3px solid #b94e7c;
+  outline-offset: 3px;
+}

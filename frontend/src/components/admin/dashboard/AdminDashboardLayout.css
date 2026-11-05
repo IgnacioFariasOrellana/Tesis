@@ -1,0 +1,57 @@
+.admin-overview-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(280px, 1fr);
+  gap: 20px;
+  align-items: stretch;
+}
+.admin-overview-side {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+}
+.admin-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.admin-card-heading > svg {
+  color: #9b7a8a;
+  flex-shrink: 0;
+}
+.admin-section-label {
+  display: block;
+  font-size: 8px;
+  letter-spacing: 0.15em;
+  color: #a18895;
+  font-weight: 700;
+  margin-bottom: 7px;
+}
+.admin-period {
+  background: #f7edf2;
+  color: #8d5970;
+  padding: 6px 9px;
+  font-size: 9px;
+  border-radius: 7px;
+  white-space: nowrap;
+}
+.admin-chart-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.admin-chart-summary strong {
+  font-size: 32px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+.admin-chart-summary span {
+  color: var(--admin-muted);
+  font-size: 10px;
+}
+.admin-chart-summary svg {
+  margin-left: auto;
+  color: #bb7a93;
+}

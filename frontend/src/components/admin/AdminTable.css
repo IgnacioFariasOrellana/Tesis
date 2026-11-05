@@ -1,0 +1,36 @@
+.admin-table-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 24px 24px 15px;
+}
+.admin-dashboard .data-table {
+  font-size: 11px;
+}
+.admin-dashboard .data-table th {
+  background: #f8f5f7;
+  font-weight: 600;
+  color: #8e7c86;
+  font-size: 9px;
+  padding: 14px 17px;
+}
+.admin-dashboard .data-table td {
+  padding: 17px;
+  border-color: #f2edef;
+}
+.admin-dashboard .data-table tbody tr:hover {
+  background: #fdf9fb;
+}
+.admin-dashboard .table-footer {
+  color: #a18b96;
+  border-color: var(--admin-border);
+  font-size: 10px;
+  padding: 15px 24px;
+}
+.admin-dashboard .status-pill {
+  background: #f7edf2;
+  color: #965672;
+  font-size: 9px;
+  border-radius: 6px;
+}

@@ -1,0 +1,101 @@
+.account-bg {
+  background: linear-gradient(110deg, #fff5f8, #fffdf8);
+  padding: 45px 0;
+}
+.account-wrap {
+  background: #f8f3ee;
+  border-radius: 35px;
+  padding: 40px;
+  max-width: 1170px;
+}
+.account-heading {
+  text-align: center;
+  max-width: 690px;
+  margin: 0 auto 35px;
+}
+.account-heading img {
+  display: block;
+  margin: 0 auto 10px;
+}
+.account-heading h1 {
+  font-size: clamp(26px, 3vw, 38px);
+  line-height: 1.2;
+  margin-top: 8px;
+}
+.account-heading p {
+  color: var(--muted);
+}
+.account-columns {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 25px;
+}
+.account-card {
+  background: white;
+  border-radius: 22px;
+  border: 1px solid var(--stroke);
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-self: start;
+  box-shadow: var(--shadow);
+}
+.account-card-title {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  border-bottom: 1px solid var(--stroke);
+  padding-bottom: 13px;
+}
+.account-card-title svg {
+  color: var(--pink);
+  background: #fff0f6;
+  padding: 8px;
+  box-sizing: content-box;
+  border-radius: 13px;
+}
+.account-card-title small {
+  font-size: 10px;
+  color: var(--pink);
+  font-weight: 700;
+}
+.account-card-title h2 {
+  margin: 0;
+}
+.account-bottom {
+  text-align: center;
+  font-size: 12px;
+  border: 1px solid var(--stroke);
+  background: white;
+  border-radius: 100px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 25px auto 0;
+  padding: 12px 18px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.account-bottom svg {
+  color: var(--pink);
+}
+.demo-notice {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  padding: 14px 18px;
+  margin: 20px 0;
+  background: #fff3d9;
+  color: #9c5300;
+  border: 1px solid #ffdfaa;
+  border-radius: 16px;
+  font-size: 12px;
+}
+.demo-notice button {
+  border: 0;
+  background: transparent;
+  margin-left: auto;
+  font-size: 20px;
+  color: inherit;
+}

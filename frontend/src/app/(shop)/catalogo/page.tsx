@@ -1,4 +1,4 @@
-import { CatalogClient } from "@/components/CatalogClient";
+import { CatalogClient } from "@/components/catalog/CatalogClient";
 import { getProducts } from "@/lib/product-api";
 
 export const metadata = { title: "Catálogo de detalles" };
