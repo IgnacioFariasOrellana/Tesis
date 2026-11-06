@@ -1,3 +1,5 @@
+import type { Product } from "./types";
+
 export type DatabaseOrderItem = {
   productId: number;
   name: string;
@@ -48,6 +50,13 @@ export type DatabasePayment = {
   status: string | null;
   paidAt: string | null;
   createdAt: string;
+};
+
+export type AdminOverview = {
+  orders: DatabaseOrder[];
+  payments: DatabasePayment[];
+  inventory: InventoryItem[];
+  products: Product[];
 };
 
 export type DeliveryStop = {

@@ -7,7 +7,7 @@ export const metadata = { title: "Administrar productos" };
 
 export default async function AdminProductsPage() {
   const [products, inventory] = await Promise.all([
-    getProducts(),
+    getProducts({ fresh: true }),
     getAuthorizedData<InventoryItem[]>("/api/admin/inventory"),
   ]);
   return <ProductAdminClient products={products} initialInventory={inventory} />;

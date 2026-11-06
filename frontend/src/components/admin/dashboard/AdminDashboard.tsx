@@ -12,19 +12,14 @@ import {
   Wallet,
 } from "lucide-react";
 import { getAuthorizedData } from "@/lib/auth-api";
-import { getProducts } from "@/lib/product-api";
 import { currency } from "@/lib/format";
-import type { DatabaseOrder, DatabasePayment, InventoryItem } from "@/lib/db-types";
+import type { AdminOverview } from "@/lib/db-types";
 import { AdminMetricCard } from "@/components/admin/AdminMetricCard";
 import { OrderActivity } from "@/components/admin/OrderActivity";
 
 export default async function AdminDashboard() {
-  const [orders, payments, inventory, products] = await Promise.all([
-    getAuthorizedData<DatabaseOrder[]>("/api/admin/orders"),
-    getAuthorizedData<DatabasePayment[]>("/api/admin/payments"),
-    getAuthorizedData<InventoryItem[]>("/api/admin/inventory"),
-    getProducts(),
-  ]);
+  const { orders, payments, inventory, products } =
+    await getAuthorizedData<AdminOverview>("/api/admin/overview");
   const pending = orders.filter(
     (order) => !["entregado", "cancelado"].includes(order.status.toLowerCase()),
   );

@@ -9,6 +9,7 @@ from app.api.insumo import router as insumo_router
 from app.api.pedido import router as pedido_router
 from app.api.pago import router as pago_router
 from app.api.ruta_reparto import router as ruta_reparto_router
+from app.api.resumen import router as resumen_router
 
 app = FastAPI(title="Allicam API", version="0.3.0")
 app.add_middleware(
@@ -23,6 +24,7 @@ app.include_router(insumo_router)
 app.include_router(pedido_router)
 app.include_router(pago_router)
 app.include_router(ruta_reparto_router)
+app.include_router(resumen_router)
 
 
 @app.get("/health")

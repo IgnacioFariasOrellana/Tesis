@@ -2,17 +2,33 @@
 
 import re
 import unicodedata
+from threading import RLock
+from time import monotonic
 from uuid import uuid4
 
 from app.integrations.supabase import SupabaseClient, SupabaseError
 from app.repositories.categoria import ensure_category
 from app.repositories.producto import insert_product, public_products, slug_exists
 from app.repositories.producto_insumo import for_products
-from app.schemas.producto import NewProduct
+from app.schemas.producto import NewProduct, Product
 from app.schemas.producto_insumo import ProductSupply
 from app.services.storage import delete_photo, upload_photo
 
 MAX_IMAGE_BYTES = 5 * 1024 * 1024
+CATALOG_CACHE_SECONDS = 30
+
+_catalog_cache: dict[str, tuple[float, list[Product]]] = {}
+_catalog_cache_lock = RLock()
+
+
+def invalidate_catalog_cache() -> None:
+    """Descarta el catálogo almacenado después de modificar productos."""
+    with _catalog_cache_lock:
+        _catalog_cache.clear()
+
+
+def _copy_products(products: list[Product]) -> list[Product]:
+    return [product.model_copy(deep=True) for product in products]
 
 
 class ProductError(Exception):
@@ -106,15 +122,28 @@ def create_product(data: NewProduct, photo: bytes) -> dict[str, str]:
         if exc.status == 400:
             raise ProductError(422, "Revisa los insumos y sus cantidades; deben estar activos") from exc
         raise ProductError(502, "No se pudo guardar el producto") from exc
+    invalidate_catalog_cache()
     return {"slug": slug, "image": image_url}
 
 
 def catalog_products(slug: str | None = None):
+    cache_key = slug or "*"
+    now = monotonic()
+    with _catalog_cache_lock:
+        cached = _catalog_cache.get(cache_key)
+        if cached and cached[0] > now:
+            return _copy_products(cached[1])
+
     # Primero se aplica RLS con la clave pública. Solo se completa el contenido
     # de los productos publicados; nunca se incluyen existencias del inventario.
     products = public_products(SupabaseClient("SUPABASE_PUBLISHABLE_KEY"), slug)
     if not products:
-        return products
+        with _catalog_cache_lock:
+            _catalog_cache[cache_key] = (
+                monotonic() + CATALOG_CACHE_SECONDS,
+                [],
+            )
+        return []
     rows = for_products(SupabaseClient("SUPABASE_SECRET_KEY"), [int(product.id) for product in products])
     by_id = {int(product.id): product for product in products}
     for row in rows:
@@ -128,4 +157,9 @@ def catalog_products(slug: str | None = None):
             product.features = [
                 f"{item.name} · {item.quantity:g} {item.unit}" for item in product.supplies
             ]
-    return products
+    with _catalog_cache_lock:
+        _catalog_cache[cache_key] = (
+            monotonic() + CATALOG_CACHE_SECONDS,
+            _copy_products(products),
+        )
+    return _copy_products(products)
