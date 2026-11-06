@@ -2,7 +2,14 @@
 
 from app.integrations.supabase import SupabaseClient
 
-SELECT = "id,id_usuario,numero_pedido,estado_actual,subtotal,costo_entrega,total,fecha_creacion,fecha_actualizacion"
+SELECT = (
+    "id,id_usuario,numero_pedido,estado_actual,subtotal,costo_entrega,total,"
+    "fecha_creacion,fecha_actualizacion,"
+    "detalle_pedido(id,id_producto,nombre_producto,cantidad,precio_unitario,subtotal,"
+    "producto(imagen_url)),"
+    "datos_entrega(nombre_destinatario,telefono_destinatario,fecha_entrega,hora_desde,"
+    "hora_hasta,direccion,dedicatoria,instrucciones)"
+)
 
 
 def list_pedidos(client: SupabaseClient, user_id: int | None = None) -> list[dict]:

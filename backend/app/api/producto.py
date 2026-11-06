@@ -12,7 +12,13 @@ from app.integrations.supabase import SupabaseClient, SupabaseError
 from app.repositories.producto_insumo import replace_supplies
 from app.schemas.producto_insumo import ProductSupplies
 from app.schemas.producto import NewProduct, Product
-from app.services.productos import MAX_IMAGE_BYTES, ProductError, catalog_products, create_product
+from app.services.productos import (
+    MAX_IMAGE_BYTES,
+    ProductError,
+    catalog_products,
+    create_product,
+    invalidate_catalog_cache,
+)
 
 router = APIRouter()
 
@@ -82,6 +88,7 @@ def update_supplies(product_id: int, data: ProductSupplies, _: Annotated[dict, D
         raise HTTPException(status_code=404, detail="Producto no encontrado")
     try:
         replace_supplies(SupabaseClient("SUPABASE_SECRET_KEY"), product_id, data)
+        invalidate_catalog_cache()
         return {"updated": True}
     except ConfigurationError as exc:
         raise HTTPException(status_code=503, detail="Supabase no está configurado") from exc
