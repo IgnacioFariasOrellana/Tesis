@@ -15,3 +15,7 @@ class NewInsumo(BaseModel):
     @classmethod
     def trim_text(cls, value: object) -> object:
         return value.strip() if isinstance(value, str) else value
+
+
+class RestockInsumo(BaseModel):
+    cantidad: Decimal = Field(gt=0, max_digits=12, decimal_places=3)

@@ -6,4 +6,5 @@
 @import "../../components/admin/dashboard/AdminDashboard.css";
 @import "../../components/admin/AdminTable.css";
 @import "../../components/admin/payments/PaymentsView.css";
+@import "../../components/admin/inventory/InventoryView.css";
 @import "./admin-responsive.css";

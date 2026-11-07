@@ -103,6 +103,8 @@ class SupabaseClient:
                         parsed.scheme, parsed.hostname, parsed.port, connection
                     )
                 if status >= 400:
+                    if method in ("GET", "HEAD") and status in (429, 502, 503, 504) and attempt == 0:
+                        continue
                     raise SupabaseError(status)
                 return json.loads(raw) if raw else None
             except SupabaseError:
