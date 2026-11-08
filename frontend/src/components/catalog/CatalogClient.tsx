@@ -38,7 +38,7 @@ export function CatalogClient({ products }: { products: Product[] }) {
     <>
       <section className="catalog-hero">
         <div className="container">
-          <div className="eyebrow">✿ UN DETALLITO HECHO CON AMOR</div>
+          <div className="eyebrow">♥ UN DETALLITO HECHO CON AMOR ♥</div>
           <div className="catalog-hero-row">
             <div>
               <h1 className="serif-title">
@@ -47,18 +47,12 @@ export function CatalogClient({ products }: { products: Product[] }) {
                 <em>de Autor</em>
               </h1>
               <p>
-                Bandejas de madera noble, flores preservadas y repostería artesanal
-                <br className="desktop-only" /> horneada cada madrugada. Cada regalo viaja empacado
+                Bandejas de madera, flores preservadas y repostería artesanal
+                <br className="desktop-only" /> horneada. Cada regalo viaja empacado
                 con cariño.
               </p>
             </div>
-            <div className="delivery-card">
-              <Truck size={25} />
-              <span>
-                <strong>Entregas Matutinas</strong>
-                <small>Franjas de 7:30 a 11:30 AM</small>
-              </span>
-            </div>
+            
           </div>
         </div>
       </section>
@@ -129,14 +123,6 @@ export function CatalogClient({ products }: { products: Product[] }) {
                     </button>
                   ))}
                 </div>
-                <label className="today-filter">
-                  <input
-                    type="checkbox"
-                    checked={today}
-                    onChange={(e) => setToday(e.target.checked)}
-                  />{" "}
-                  <Clock3 size={14} /> Entrega hoy
-                </label>
               </div>
             </div>
           </aside>
