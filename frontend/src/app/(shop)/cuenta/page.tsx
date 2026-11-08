@@ -1,10 +1,13 @@
 import Image from "next/image";
-import { LoginForm } from "@/components/auth/LoginForm";
 import { AccountProfile } from "@/components/auth/AccountProfile";
+import { AuthAccessView } from "@/components/auth/AuthAccessView";
 import { getProfile } from "@/lib/supabase/profile";
 
 export default async function AccountPage() {
   const profile = await getProfile();
+  if (!profile) {
+    return <AuthAccessView initialMode="login" />;
+  }
   return (
     <div className="account-bg">
       <div className="container account-wrap account-wrap-narrow">
@@ -18,9 +21,9 @@ export default async function AccountPage() {
           />
           <span className="eyebrow">✿ BOUTIQUE DE REGALOS & EXPERIENCIAS</span>
           <h1>Qué gusto verte de nuevo</h1>
-          <p>{profile ? "Consulta tu perfil y accede a tu panel." : "Ingresa para acceder a tu perfil."}</p>
+          <p>Consulta tu perfil y accede a tu panel.</p>
         </div>
-        {profile ? <AccountProfile profile={profile} /> : <LoginForm />}
+        <AccountProfile profile={profile} />
       </div>
     </div>
   );
