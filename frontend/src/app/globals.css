@@ -10,6 +10,7 @@
 @import "../components/shop/cart/CartView.css";
 @import "../components/shop/checkout/CheckoutView.css";
 @import "../components/auth/AccountLayout.css";
+@import "../components/auth/AuthSplitShell.css";
 @import "../components/shop/orders/OrderHistoryView.css";
 @import "../components/admin/DashboardShell.css";
 @import "../components/delivery/DeliveryView.css";

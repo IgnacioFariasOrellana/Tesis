@@ -9,10 +9,12 @@ import { createClient } from "@/lib/supabase/client";
 export function LoginForm({
   compact = false,
   onRegisterClick,
+  onModeChange,
   onSuccess,
 }: {
   compact?: boolean;
   onRegisterClick?: () => void;
+  onModeChange?: () => void;
   onSuccess?: () => void;
 }) {
   const [notice, setNotice] = useState("");
@@ -46,21 +48,25 @@ export function LoginForm({
       return;
     }
     onSuccess?.();
-    router.replace(profile.rol === "admin" ? "/admin" : profile.rol === "repartidor" ? "/repartidor" : "/cuenta");
+    router.replace(
+      profile.rol === "admin" ? "/admin" : profile.rol === "repartidor" ? "/repartidor" : "/cuenta",
+    );
     router.refresh();
   }
   return (
     <form
-      className={compact ? "login-form login-form-compact" : "account-card login-form"}
+      className={compact ? "login-form login-form-compact" : "login-form auth-split-form"}
       onSubmit={onSubmit}
     >
-      <div className="account-card-title">
-        <LogIn />
-        <div>
-          <small>BIENVENIDO DE NUEVO</small>
-          <h2>Iniciar sesión</h2>
+      {compact && (
+        <div className="account-card-title">
+          <LogIn />
+          <div>
+            <small>BIENVENIDO DE NUEVO</small>
+            <h2>Iniciar sesión</h2>
+          </div>
         </div>
-      </div>
+      )}
       <label>
         Correo electrónico
         <input
@@ -94,9 +100,15 @@ export function LoginForm({
       )}
       <p className="login-register">
         ¿Aún no tienes perfil?{" "}
-        <Link href="/registro" onClick={onRegisterClick}>
-          Crear perfil
-        </Link>
+        {compact ? (
+          <Link href="/registro" onClick={onRegisterClick}>
+            Crear perfil
+          </Link>
+        ) : (
+          <button type="button" onClick={onModeChange}>
+            Crear perfil
+          </button>
+        )}
       </p>
     </form>
   );
