@@ -324,7 +324,7 @@
 
 .product-photo-dropzone {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   gap: 14px;
   min-height: 112px;
@@ -333,6 +333,7 @@
   border-radius: 14px;
   background: #fff8fa;
   color: var(--pink-dark);
+  cursor: pointer;
   outline: none;
   transition:
     border-color 160ms ease,
@@ -372,10 +373,6 @@
   font-size: 9px;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.product-photo-dropzone small {
-  grid-column: 2 / -1;
 }
 
 .product-photo-input {
@@ -456,19 +453,6 @@
   .admin-product-fields,
   .supply-row {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .product-photo-dropzone {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-
-  .product-photo-dropzone .btn {
-    grid-column: 1 / -1;
-    justify-self: stretch;
-  }
-
-  .product-photo-dropzone small {
-    grid-column: 1 / -1;
   }
 }
 @media (max-width: 520px) {

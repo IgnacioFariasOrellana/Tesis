@@ -18,6 +18,7 @@ from app.services.productos import (
     catalog_products,
     create_product,
     invalidate_catalog_cache,
+    update_product,
 )
 
 router = APIRouter()
@@ -76,6 +77,47 @@ def add_product(
     )
     try:
         return create_product(data, image)
+    except ConfigurationError as exc:
+        raise HTTPException(status_code=503, detail="Supabase no está configurado") from exc
+    except ProductError as exc:
+        raise HTTPException(status_code=exc.status, detail=exc.message) from exc
+
+
+@router.patch("/api/admin/products/{product_id}")
+def edit_product(
+    product_id: int,
+    _: Annotated[dict, Depends(require_admin)],
+    name: str = Form(...),
+    category: str = Form(...),
+    description: str = Form(...),
+    price: str = Form(...),
+    badge: str = Form(""),
+    occasions: str = Form(""),
+    supplies: str = Form(...),
+    photo: UploadFile | None = File(None),
+):
+    try:
+        selection = ProductSupplies(supplies=json.loads(supplies))
+    except (ValueError, TypeError) as exc:
+        raise HTTPException(
+            status_code=422,
+            detail="Selecciona insumos sin repetir y cantidades mayores que cero",
+        ) from exc
+    image = None
+    if photo is not None and photo.filename:
+        image = photo.file.read(MAX_IMAGE_BYTES + 1)
+    data = NewProduct(
+        name=name,
+        category=category,
+        description=description,
+        price=price,
+        badge=badge,
+        occasions=occasions,
+        supplies=selection.supplies,
+        available_today=False,
+    )
+    try:
+        return update_product(product_id, data, image)
     except ConfigurationError as exc:
         raise HTTPException(status_code=503, detail="Supabase no está configurado") from exc
     except ProductError as exc:

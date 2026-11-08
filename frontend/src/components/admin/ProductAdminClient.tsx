@@ -1,6 +1,6 @@
 "use client";
 
-import { DragEvent, FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -12,7 +12,6 @@ import {
   Pencil,
   Plus,
   Tag,
-  UploadCloud,
   X,
 } from "lucide-react";
 import { currency } from "@/lib/format";
@@ -25,6 +24,7 @@ import {
   supplyPayload,
   type SupplyRow,
 } from "./ProductSuppliesEditor";
+import { ProductPhotoDropzone } from "./ProductPhotoDropzone";
 
 export function ProductAdminClient({
   products,
@@ -45,9 +45,6 @@ export function ProductAdminClient({
   const [editSupplies, setEditSupplies] = useState<SupplyRow[]>([]);
   const [editMessage, setEditMessage] = useState("");
   const [editError, setEditError] = useState(false);
-  const [photoName, setPhotoName] = useState("");
-  const [draggingPhoto, setDraggingPhoto] = useState(false);
-  const photoInput = useRef<HTMLInputElement>(null);
   const editingProduct = products.find((product) => product.id === editing) || null;
 
   useEffect(() => {
@@ -73,38 +70,7 @@ export function ProductAdminClient({
     setMessage("");
     setError(false);
     setSupplies([emptySupply()]);
-    setPhotoName("");
     setShowCreate(true);
-  }
-
-  function selectPhoto(file: File | undefined) {
-    if (!file) return;
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-      if (photoInput.current) photoInput.current.value = "";
-      setPhotoName("");
-      setError(true);
-      setMessage("Selecciona una imagen JPG, PNG o WebP.");
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      if (photoInput.current) photoInput.current.value = "";
-      setPhotoName("");
-      setError(true);
-      setMessage("La foto debe pesar 5 MB o menos.");
-      return;
-    }
-    const transfer = new DataTransfer();
-    transfer.items.add(file);
-    if (photoInput.current) photoInput.current.files = transfer.files;
-    setPhotoName(file.name);
-    setError(false);
-    setMessage("");
-  }
-
-  function dropPhoto(event: DragEvent<HTMLDivElement>) {
-    event.preventDefault();
-    setDraggingPhoto(false);
-    selectPhoto(event.dataTransfer.files[0]);
   }
 
   function openSupplyModal(product: Product) {
@@ -121,27 +87,29 @@ export function ProductAdminClient({
     setEditing(product.id);
   }
 
-  async function saveSupplies(event: FormEvent<HTMLFormElement>, productId: string) {
+  async function updateProduct(event: FormEvent<HTMLFormElement>, productId: string) {
     event.preventDefault();
     if (busy || creatingSupply) return;
     setBusy(true);
     setEditMessage("");
     try {
-      await adminRequest(`/api/admin/products/${productId}/supplies`, {
+      const form = event.currentTarget;
+      const data = new FormData(form);
+      data.set("supplies", JSON.stringify(supplyPayload(editSupplies)));
+      const photo = data.get("photo");
+      if (photo instanceof File && photo.size === 0) data.delete("photo");
+      await adminRequest(`/api/admin/products/${productId}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ supplies: supplyPayload(editSupplies) }),
+        body: data,
       });
       setEditError(false);
       setEditing(null);
-      setMessage(`Se actualizó la composición de ${editingProduct?.name || "el producto"}.`);
+      setMessage(`Se actualizó ${editingProduct?.name || "el producto"}.`);
       setError(false);
       router.refresh();
     } catch (cause) {
       setEditError(true);
-      setEditMessage(
-        cause instanceof Error ? cause.message : "No se pudieron guardar los insumos.",
-      );
+      setEditMessage(cause instanceof Error ? cause.message : "No se pudo actualizar el producto.");
     } finally {
       setBusy(false);
     }
@@ -169,7 +137,6 @@ export function ProductAdminClient({
       await adminRequest("/api/admin/products", { method: "POST", body: data });
       form.reset();
       setSupplies([emptySupply()]);
-      setPhotoName("");
       setError(false);
       setMessage("Producto guardado. Ya está disponible en el catálogo.");
       setShowCreate(false);
@@ -281,7 +248,7 @@ export function ProductAdminClient({
                       disabled={busy || creatingSupply}
                       onClick={() => openSupplyModal(product)}
                     >
-                      <Pencil size={13} /> Editar insumos
+                      <Pencil size={13} /> Editar producto
                     </button>
                     <Link className="text-link" href={`/producto/${product.slug}`}>
                       Ver producto <ArrowUpRight size={13} />
@@ -391,56 +358,13 @@ export function ProductAdminClient({
                   onCreated={addToInventory}
                   onBusyChange={setCreatingSupply}
                 />
-                <div
-                  className={`product-photo-dropzone ${draggingPhoto ? "is-dragging" : ""}`}
-                  role="button"
-                  tabIndex={0}
-                  onDragEnter={(event) => {
-                    event.preventDefault();
-                    setDraggingPhoto(true);
+                <ProductPhotoDropzone
+                  required
+                  onError={(photoError) => {
+                    setError(Boolean(photoError));
+                    setMessage(photoError);
                   }}
-                  onDragOver={(event) => event.preventDefault()}
-                  onDragLeave={(event) => {
-                    if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-                      setDraggingPhoto(false);
-                    }
-                  }}
-                  onDrop={dropPhoto}
-                  onKeyDown={(event) => {
-                    if (
-                      event.target === event.currentTarget &&
-                      (event.key === "Enter" || event.key === " ")
-                    ) {
-                      photoInput.current?.click();
-                    }
-                  }}
-                >
-                  <input
-                    ref={photoInput}
-                    className="product-photo-input"
-                    name="photo"
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    onChange={(event) => selectPhoto(event.target.files?.[0])}
-                  />
-                  <UploadCloud size={27} />
-                  <div>
-                    <strong>
-                      Fotografía del producto <b className="required-mark">*</b>
-                    </strong>
-                    <span>
-                      {photoName || "Arrastra una imagen aquí o selecciónala desde tu equipo."}
-                    </span>
-                  </div>
-                  <button
-                    className="btn btn-outline btn-small"
-                    type="button"
-                    onClick={() => photoInput.current?.click()}
-                  >
-                    Seleccionar imagen
-                  </button>
-                  <small>JPG, PNG o WebP · máximo 5 MB</small>
-                </div>
+                />
                 {message && (
                   <p role="status" className={error ? "danger-text" : "success-text"}>
                     {message}
@@ -464,16 +388,16 @@ export function ProductAdminClient({
           }}
         >
           <section
-            className="admin-product-modal admin-product-supply-modal"
+            className="admin-product-modal"
             role="dialog"
             aria-modal="true"
-            aria-labelledby="edit-supplies-title"
+            aria-labelledby="edit-product-title"
           >
             <header className="admin-product-modal-heading">
               <div>
-                <span className="overline">COMPOSICIÓN DEL PRODUCTO</span>
-                <h2 id="edit-supplies-title">Insumos de {editingProduct.name}</h2>
-                <p>Selecciona los materiales utilizados para elaborar una unidad.</p>
+                <span className="overline">EDICIÓN DEL CATÁLOGO</span>
+                <h2 id="edit-product-title">Editar {editingProduct.name}</h2>
+                <p>Actualiza su información, fotografía y composición.</p>
               </div>
               <button
                 type="button"
@@ -490,8 +414,86 @@ export function ProductAdminClient({
                 para vincularlos al inventario.
               </p>
             )}
-            <form onSubmit={(event) => saveSupplies(event, editingProduct.id)}>
+            <form
+              className="admin-product-form"
+              onSubmit={(event) => updateProduct(event, editingProduct.id)}
+            >
               <fieldset className="plain-fieldset product-fields" disabled={busy || creatingSupply}>
+                <p className="required-note">
+                  <b>*</b> Campos obligatorios
+                </p>
+                <div className="admin-product-fields">
+                  <label>
+                    <span>
+                      Nombre <b className="required-mark">*</b>
+                    </span>
+                    <input
+                      className="input"
+                      name="name"
+                      maxLength={120}
+                      defaultValue={editingProduct.name}
+                      required
+                    />
+                  </label>
+                  <label>
+                    <span>
+                      Categoría <b className="required-mark">*</b>
+                    </span>
+                    <input
+                      className="input"
+                      name="category"
+                      maxLength={80}
+                      defaultValue={editingProduct.category}
+                      required
+                    />
+                  </label>
+                  <label>
+                    <span>
+                      Precio (CLP) <b className="required-mark">*</b>
+                    </span>
+                    <input
+                      className="input"
+                      name="price"
+                      type="number"
+                      min="1"
+                      max="2147483647"
+                      step="1"
+                      defaultValue={editingProduct.price}
+                      required
+                      onWheel={(event) => event.currentTarget.blur()}
+                    />
+                  </label>
+                  <label>
+                    Etiqueta
+                    <input
+                      className="input"
+                      name="badge"
+                      maxLength={80}
+                      defaultValue={editingProduct.badge}
+                    />
+                  </label>
+                </div>
+                <label>
+                  <span>
+                    Descripción <b className="required-mark">*</b>
+                  </span>
+                  <textarea
+                    className="input"
+                    name="description"
+                    rows={3}
+                    maxLength={2000}
+                    defaultValue={editingProduct.description}
+                    required
+                  />
+                </label>
+                <label>
+                  Ocasiones
+                  <input
+                    className="input"
+                    name="occasions"
+                    defaultValue={editingProduct.occasions.join(", ")}
+                  />
+                </label>
                 <ProductSuppliesEditor
                   inventory={inventory}
                   value={editSupplies}
@@ -499,13 +501,19 @@ export function ProductAdminClient({
                   onCreated={addToInventory}
                   onBusyChange={setCreatingSupply}
                 />
+                <ProductPhotoDropzone
+                  onError={(photoError) => {
+                    setEditError(Boolean(photoError));
+                    setEditMessage(photoError);
+                  }}
+                />
                 {editMessage && (
                   <p role="status" className={editError ? "danger-text" : "success-text"}>
                     {editMessage}
                   </p>
                 )}
                 <button className="btn btn-primary" type="submit" disabled={busy || creatingSupply}>
-                  {busy ? "Guardando..." : "Guardar insumos"}
+                  {busy ? "Guardando..." : "Guardar cambios"}
                 </button>
               </fieldset>
             </form>

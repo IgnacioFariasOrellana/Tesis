@@ -8,7 +8,13 @@ from uuid import uuid4
 
 from app.integrations.supabase import SupabaseClient, SupabaseError
 from app.repositories.categoria import ensure_category
-from app.repositories.producto import insert_product, public_products, slug_exists
+from app.repositories.producto import (
+    insert_product,
+    product_for_update,
+    public_products,
+    slug_exists,
+    update_product_row,
+)
 from app.repositories.producto_insumo import for_products
 from app.schemas.producto import NewProduct, Product
 from app.schemas.producto_insumo import ProductSupply
@@ -122,6 +128,92 @@ def create_product(data: NewProduct, photo: bytes) -> dict[str, str]:
         if exc.status == 400:
             raise ProductError(422, "Revisa los insumos y sus cantidades; deben estar activos") from exc
         raise ProductError(502, "No se pudo guardar el producto") from exc
+    invalidate_catalog_cache()
+    return {"slug": slug, "image": image_url}
+
+
+def _storage_name(image_url: str | None) -> str | None:
+    marker = "/storage/v1/object/public/product-images/"
+    if not image_url or marker not in image_url:
+        return None
+    return image_url.split(marker, 1)[1] or None
+
+
+def update_product(product_id: int, data: NewProduct, photo: bytes | None) -> dict[str, str]:
+    name = data.name.strip()
+    category = data.category.strip()
+    description = data.description.strip()
+    badge = data.badge.strip()
+    slug = _slug(name)
+    if product_id < 1:
+        raise ProductError(404, "Producto no encontrado")
+    if not name or len(name) > 120 or not slug or not category or len(category) > 80:
+        raise ProductError(400, "Completa nombre y categoría con textos válidos")
+    if not description or len(description) > 2000 or len(badge) > 80:
+        raise ProductError(400, "Completa la descripción con un texto válido")
+    try:
+        price = int(data.price)
+    except ValueError as exc:
+        raise ProductError(400, "Ingresa un precio válido en pesos") from exc
+    if price <= 0 or price > 2147483647:
+        raise ProductError(400, "Ingresa un precio válido en pesos")
+    occasions = _items(data.occasions, 20, 50)
+
+    client = SupabaseClient("SUPABASE_SECRET_KEY")
+    try:
+        current = product_for_update(client, product_id)
+        if not current or not current["activo"]:
+            raise ProductError(404, "Producto no encontrado")
+        if slug_exists(client, slug, exclude_id=product_id):
+            raise ProductError(409, "Ya existe otro producto con ese nombre")
+        category_id = ensure_category(client, category)
+    except SupabaseError as exc:
+        raise ProductError(502, "No se pudo preparar el producto en Supabase") from exc
+
+    image_url = current["imagen_url"]
+    new_photo_name: str | None = None
+    if photo is not None:
+        if not photo or len(photo) > MAX_IMAGE_BYTES:
+            raise ProductError(400, "Selecciona una foto de hasta 5 MB")
+        mime, extension = _photo_type(photo)
+        new_photo_name = f"{uuid4()}.{extension}"
+        try:
+            image_url = upload_photo(client, new_photo_name, photo, mime)
+        except SupabaseError as exc:
+            raise ProductError(502, "No se pudo subir la nueva foto") from exc
+
+    try:
+        update_product_row(client, product_id, {
+            "id_categoria": category_id,
+            "slug": slug,
+            "nombre": name,
+            "descripcion": description,
+            "precio": price,
+            "imagen_url": image_url,
+            "etiqueta": badge,
+            "ocasiones": occasions,
+            "disponible_hoy": current["disponible_hoy"],
+        }, [item.model_dump(mode="json") for item in data.supplies])
+    except SupabaseError as exc:
+        if new_photo_name:
+            try:
+                delete_photo(client, new_photo_name)
+            except SupabaseError:
+                pass
+        if exc.status == 404:
+            raise ProductError(503, "Falta aplicar la migración 006 de edición de productos") from exc
+        if exc.status == 409:
+            raise ProductError(409, "Ya existe otro producto con ese nombre") from exc
+        if exc.status == 400:
+            raise ProductError(422, "Revisa los datos y los insumos seleccionados") from exc
+        raise ProductError(502, "No se pudo actualizar el producto") from exc
+
+    old_photo_name = _storage_name(current["imagen_url"])
+    if new_photo_name and old_photo_name:
+        try:
+            delete_photo(client, old_photo_name)
+        except SupabaseError:
+            pass
     invalidate_catalog_cache()
     return {"slug": slug, "image": image_url}
 

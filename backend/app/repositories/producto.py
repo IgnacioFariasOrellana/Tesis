@@ -39,13 +39,24 @@ def public_products(client: SupabaseClient, slug: str | None = None) -> list[Pro
     ]
 
 
-def slug_exists(client: SupabaseClient, slug: str) -> bool:
+def slug_exists(client: SupabaseClient, slug: str, exclude_id: int | None = None) -> bool:
+    query = {"select": "id", "slug": f"eq.{slug}", "limit": "1"}
+    if exclude_id is not None:
+        query["id"] = f"neq.{exclude_id}"
     rows = client.request(
         "GET",
         "rest/v1/producto",
-        query={"select": "id", "slug": f"eq.{slug}", "limit": "1"},
+        query=query,
     )
     return bool(rows)
+
+
+def product_for_update(client: SupabaseClient, product_id: int) -> dict | None:
+    rows = client.request("GET", "rest/v1/producto", query={
+        "select": "id,slug,imagen_url,disponible_hoy,activo",
+        "id": f"eq.{product_id}", "limit": "1",
+    })
+    return rows[0] if rows else None
 
 
 def images_by_ids(client: SupabaseClient, ids: list[int]) -> dict[int, str | None]:
@@ -60,4 +71,12 @@ def images_by_ids(client: SupabaseClient, ids: list[int]) -> dict[int, str | Non
 def insert_product(client: SupabaseClient, values: dict[str, Any], supplies: list[dict]) -> None:
     client.request("POST", "rest/v1/rpc/crear_producto_allicam", payload={
         "p_producto": values, "p_insumos": supplies,
+    })
+
+
+def update_product_row(
+    client: SupabaseClient, product_id: int, values: dict[str, Any], supplies: list[dict]
+) -> None:
+    client.request("POST", "rest/v1/rpc/actualizar_producto_allicam", payload={
+        "p_producto": product_id, "p_datos": values, "p_insumos": supplies,
     })
