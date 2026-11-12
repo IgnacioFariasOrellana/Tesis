@@ -9,7 +9,7 @@ from app.integrations.supabase import SupabaseError
 from app.schemas.insumo import NewInsumo
 from app.schemas.producto import NewProduct, Product
 from app.schemas.producto_insumo import ProductSupplies, SupplySelection
-from app.services.productos import ProductError, catalog_products, create_product
+from app.services.productos import ProductError, catalog_products, create_product, update_product
 
 
 class SupplyValidationTests(unittest.TestCase):
@@ -64,6 +64,24 @@ class ProductSupplyServiceTests(unittest.TestCase):
                 create_product(data, b"\xff\xd8\xfftest")
         self.assertEqual(error.exception.status, 422)
         cleanup.assert_called_once()
+
+    def test_product_update_keeps_current_photo_when_no_new_file_is_sent(self):
+        data = NewProduct(name="Bandeja actualizada", category="Desayunos",
+                          description="Nueva descripción", price="12000", badge="",
+                          occasions="Cumpleaños", available_today=False,
+                          supplies=[SupplySelection(insumoId=1, quantity=2)])
+        current = {"id": 7, "slug": "bandeja", "imagen_url": "/photo.jpg",
+                   "disponible_hoy": False, "activo": True}
+        with patch("app.services.productos.SupabaseClient"), \
+             patch("app.services.productos.product_for_update", return_value=current), \
+             patch("app.services.productos.slug_exists", return_value=False), \
+             patch("app.services.productos.ensure_category", return_value=1), \
+             patch("app.services.productos.upload_photo") as upload, \
+             patch("app.services.productos.update_product_row") as save:
+            result = update_product(7, data, None)
+        upload.assert_not_called()
+        self.assertEqual(save.call_args.args[2]["imagen_url"], "/photo.jpg")
+        self.assertEqual(result["slug"], "bandeja-actualizada")
 
 
 if __name__ == "__main__":

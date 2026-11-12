@@ -102,7 +102,9 @@ export function ProductSuppliesEditor({
           return (
             <div className="supply-row" key={index}>
               <label htmlFor={`${id}-supply-${index}`}>
-                Insumo
+                <span>
+                  Insumo <b className="required-mark">*</b>
+                </span>
                 <select
                   id={`${id}-supply-${index}`}
                   className="input"
@@ -130,7 +132,10 @@ export function ProductSuppliesEditor({
                 </select>
               </label>
               <label htmlFor={`${id}-quantity-${index}`}>
-                Cantidad por producto {selected?.unidad_medida && `(${selected.unidad_medida})`}
+                <span>
+                  Cantidad por producto {selected?.unidad_medida && `(${selected.unidad_medida})`}
+                  <b className="required-mark"> *</b>
+                </span>
                 <input
                   id={`${id}-quantity-${index}`}
                   className="input"
@@ -141,6 +146,7 @@ export function ProductSuppliesEditor({
                   required
                   value={row.quantity}
                   onChange={(event) => changeRow(index, { quantity: event.target.value })}
+                  onWheel={(event) => event.currentTarget.blur()}
                 />
               </label>
               <button
@@ -187,7 +193,9 @@ export function ProductSuppliesEditor({
           </p>
           <div className="admin-product-fields">
             <label>
-              Nombre del insumo
+              <span>
+                Nombre del insumo <b className="required-mark">*</b>
+              </span>
               <input
                 className="input"
                 maxLength={120}
@@ -197,7 +205,9 @@ export function ProductSuppliesEditor({
               />
             </label>
             <label>
-              Unidad de medida
+              <span>
+                Unidad de medida <b className="required-mark">*</b>
+              </span>
               <input
                 className="input"
                 list={`${id}-units`}
@@ -212,7 +222,9 @@ export function ProductSuppliesEditor({
               </datalist>
             </label>
             <label>
-              Stock inicial
+              <span>
+                Stock inicial <b className="required-mark">*</b>
+              </span>
               <input
                 className="input"
                 type="number"
@@ -221,10 +233,13 @@ export function ProductSuppliesEditor({
                 step="0.001"
                 value={draft.stock_actual}
                 onChange={(event) => setDraft({ ...draft, stock_actual: event.target.value })}
+                onWheel={(event) => event.currentTarget.blur()}
               />
             </label>
             <label>
-              Stock mínimo
+              <span>
+                Stock mínimo <b className="required-mark">*</b>
+              </span>
               <input
                 className="input"
                 type="number"
@@ -233,6 +248,7 @@ export function ProductSuppliesEditor({
                 step="0.001"
                 value={draft.stock_minimo}
                 onChange={(event) => setDraft({ ...draft, stock_minimo: event.target.value })}
+                onWheel={(event) => event.currentTarget.blur()}
               />
             </label>
           </div>
